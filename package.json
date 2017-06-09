@@ -1,0 +1,22 @@
+{
+  "name": "carcontroller",
+  "version": "1.0.0",
+  "description": "raspberry pi car controller",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.15.3",
+    "rpio": "^0.9.16",
+    "shelljs": "^0.7.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "http://localhost:8081",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "raspberrypi",
+    "gpio"
+  ],
+  "author": "uzi harband",
+  "license": "ISC"
+}
