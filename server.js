@@ -12,7 +12,70 @@ var left_backward = 15;
 var status = "stopped";
 
 
-app.use(express.static('.'));
+app.use(express.static(__dirname));
+
+
+//video on/off
+app.get('/video/on', function (req, res) {
+    console.log('starting motion');
+	shell.exec('sudo service motion restart', function(code, stdout, stderr) {
+		console.log('Exit code:', code);
+		console.log('Program output:', stdout);
+		console.log('Program stderr:', stderr);
+		console.log('started motion');
+		res.send('started video');
+	});
+});
+
+app.get('/video/off', function (req, res) {
+    console.log('stopping motion');
+    shell.exec('sudo service motion stop', function(code, stdout, stderr) {
+		console.log('Exit code:', code);
+		console.log('Program output:', stdout);
+		console.log('Program stderr:', stderr);
+		console.log('stopped motion');
+		res.send('stopped video');
+	});
+});
+
+
+//audio on/off
+app.get('/audio/on', function (req, res) {
+    console.log('starting audio at ' + __dirname + '/startAudioStreaming.sh');    
+    shell.exec(__dirname + '/startAudioStreaming.sh', function(code, stdout, stderr) {
+		console.log('Exit code:', code);
+		console.log('Program output:', stdout);
+		console.log('Program stderr:', stderr);
+		console.log('started audio');
+		if(stderr == ''){
+			res.send('started audio');
+		}
+		else{
+			res.send('error while starting audio! ' + stderr);
+		}
+		
+	});
+});
+
+
+app.get('/audio/off', function (req, res) {
+    console.log('stopping audio');
+    shell.exec(__dirname +  '/stopAudioStreaming.sh', function(code, stdout, stderr) {
+		console.log('Exit code:', code);
+		console.log('Program output:', stdout);
+		console.log('Program stderr:', stderr);
+		console.log('stopped audio');
+		if(stderr == ''){
+			res.send('stopped audio');
+		}
+		else{
+			res.send('error while stopping audio! ' + stderr);
+		}
+	});
+});
+
+
+// car controller
 
 app.get('/forward', function (req, res) {
     stop();    
@@ -30,53 +93,6 @@ app.get('/backward', function (req, res) {
     res.send('backward');
 })
 
-
-//video on/off
-app.get('/videoon', function (req, res) {
-    console.log('starting motion');
-	shell.exec('sudo service motion restart', function(code, stdout, stderr) {
-		console.log('Exit code:', code);
-		console.log('Program output:', stdout);
-		console.log('Program stderr:', stderr);
-		console.log('started motion');
-		res.send('started video');
-	});
-});
-
-app.get('/videooff', function (req, res) {
-    console.log('stopping motion');
-    shell.exec('sudo service motion stop', function(code, stdout, stderr) {
-		console.log('Exit code:', code);
-		console.log('Program output:', stdout);
-		console.log('Program stderr:', stderr);
-		console.log('started motion');
-		res.send('stopped video');
-	});
-});
-
-
-//audio on/off
-app.get('/audioon', function (req, res) {
-    console.log('starting audio');
-    shell.exec('sudo ./startAudioStreaming.sh', function(code, stdout, stderr) {
-		console.log('Exit code:', code);
-		console.log('Program output:', stdout);
-		console.log('Program stderr:', stderr);
-		console.log('started audio');
-		res.send('started audio');
-	});
-});
-
-app.get('/audiooff', function (req, res) {
-    console.log('stopping audio');
-    shell.exec('sudo ./stopAudioStreaming.sh', function(code, stdout, stderr) {
-		console.log('Exit code:', code);
-		console.log('Program output:', stdout);
-		console.log('Program stderr:', stderr);
-		console.log('stopped audio');
-		res.send('stopped audio');
-	});
-});
 
 
 app.get('/left/:degrees', function (req, res) {    

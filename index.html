@@ -11,14 +11,16 @@
 <br/>
 
 <h2>Audio</h2>
+<button type="button" onclick="enableAudio(true)">Turn on Audio</button>
+<button type="button" onclick="enableAudio(false)">Turn off Audio</button>
+<br/>
 
-<audio id="audio" controls="controls">
+<audio id="audio" >
 	<source id="audioSource" src='http://10.0.0.4:8080'></source>
 	Your browser does not support the audio format.
 </audio>
+<br/>
 
-<button type="button" onclick="enableAudio(true)">Turn on Audio</button>
-<button type="button" onclick="enableAudio(false)">Turn off Audio</button>
 <button onclick="audioAction('play')">play</button>
 <button onclick="audioAction('pause')">pause</button>
 <button onclick="audioAction('stop')">stop</button>
@@ -53,10 +55,10 @@ function enableVideo(enable){
 		}
 	};
 	if(enable){
-		xhttp.open("GET", "/videoon", true);
+		xhttp.open("GET", "/video/on", true);
 	}
 	else{
-		xhttp.open("GET", "/videooff", true);
+		xhttp.open("GET", "/video/off", true);
 	}
 	xhttp.send();
 }
@@ -84,10 +86,10 @@ function enableAudio(enable){
 		}
 	};
 	if(enable){
-		xhttp.open("GET", "/audioon", true);
+		xhttp.open("GET", "/audio/on", true);
 	}
 	else{
-		xhttp.open("GET", "/audiooff", true);
+		xhttp.open("GET", "/audio/off", true);
 	}
 	xhttp.send();
 }
