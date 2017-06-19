@@ -17,8 +17,8 @@
 	Your browser does not support the audio format.
 </audio>
 
-<button type="button" onclick="enableVideo(true)">Turn on Video</button>
-<button type="button" onclick="enableVideo(false)">Turn off Video</button>
+<button type="button" onclick="enableAudio(true)">Turn on Audio</button>
+<button type="button" onclick="enableAudio(false)">Turn off Audio</button>
 <button onclick="audioAction('play')">play</button>
 <button onclick="audioAction('pause')">pause</button>
 <button onclick="audioAction('stop')">stop</button>
@@ -26,7 +26,7 @@
 
 <br/>
 <h2>Video</h2>
-<img id='video' src=http://10.0.0.4:8082/ border="0" width=25%/>
+<img id='video' src='http://10.0.0.4:8082' border="0" width=25%/>
 
 <div>
 	<button type="button" onclick="enableVideo(true)">Turn on Video</button>
@@ -46,6 +46,7 @@ function enableVideo(enable){
 		if (this.readyState == 4 && this.status == 200) {
 			var video = document.getElementById('video');
 			video.src = 'http://10.0.0.4:8082';
+			console.log('after setting video src: ' + video.src);
 			console.log('before setting');
 			document.getElementById("status").innerHTML = this.responseText;
 			console.log('after setting');
@@ -60,43 +61,42 @@ function enableVideo(enable){
 	xhttp.send();
 }
 
-function enableSystem(system, enable){
+function enableAudio(enable){
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
-		console.log('system= ' + system + ', enable= ' + enable + ' req status changed. state =  ' + this.readyState + ' ' + this.status);
+		console.log('audio req returned. state =  ' + this.readyState + ' ' + this.status);
 		if (this.readyState == 4 && this.status == 200) {
-			switch(syste){
-				case 'video':
-					if(enable){
-						var video = document.getElementById('video');
-						video.src = 'http://10.0.0.4:8082';						
-						document.getElementById("status").innerHTML = 'started audio';				
-					}
-					break;
-				case 'audio':
-					if(enable){
-						var video = document.getElementById('video');
-						video.src = 'http://10.0.0.4:8082';						
-						document.getElementById("status").innerHTML = 'started audio';				
-					}				
-					break;
+			var audio = document.getElementById('audio');
+			var source = document.getElementById('audioSource');
+			if(enable){
+				source.src = 'http://10.0.0.4:8080';
+				audio.play();				
+			}
+			else{
+				source.src = '';
 			}
 
+			console.log('audio = ' + audio + ', source = ' + source);
+			console.log('after setting audio src: ' + audio.src);
+			console.log('before setting');
+			document.getElementById("status").innerHTML = this.responseText;
+			console.log('after setting');
 		}
 	};
 	if(enable){
-		xhttp.open("GET", "/videoon", true);
+		xhttp.open("GET", "/audioon", true);
 	}
 	else{
-		xhttp.open("GET", "/videooff", true);
+		xhttp.open("GET", "/audiooff", true);
 	}
 	xhttp.send();
 }
 
+
+
 function audioAction(action){
 	var audio = document.getElementById('audio');
 	var source = document.getElementById('audioSource');
-	alert(action);
 	switch(action){
 		case 'play':   
 		source.src = 'http://10.0.0.4:8080';
