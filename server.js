@@ -29,7 +29,7 @@ function leftForward(){
 	rpio.write(left_forward, rpio.HIGH);
 	rpio.write(left_backward, rpio.LOW);
 }
-function leftBackward(){
+function leftBackwards(){
 	rpio.write(left_backward, rpio.HIGH);
 	rpio.write(left_forward, rpio.LOW);
 }
@@ -74,27 +74,33 @@ function startModerateLeft(){
 
 function startSharpRight(){
 	switch(v_state){
+		case vertical_state.still:		
 		case vertical_state.going_forward:
-			rightBackward();
+			rightBackwards();
 			leftForward();
 			break;
 		case vertical_state.going_backward:
 			rightForward();
-			leftBackward();
+			leftBackwards();
 			break;			
+		default:
+			console.log("don't recognize this state: " + v_state);			
 	}
 }
 
 function startSharpLeft(){
 	switch(v_state){
+		case vertical_state.still:
 		case vertical_state.going_forward:
-			leftBackward();
+			leftBackwards();
 			rightForward();
 			break;
 		case vertical_state.going_backward:
 			leftForward();
-			rightBackward();
-			break;			
+			rightBackwards();
+			break;	
+		default:
+			console.log("don't recognize this state: " + v_state);
 	}
 }
 
@@ -180,13 +186,13 @@ app.get('/audio/off', function (req, res) {
 
 app.get('/forward', function (req, res) {
     forward();
-	v_state = vertical_status.going_forward;
+	v_state = vertical_state.going_forward;
     res.send('going forward');
 })
 
 app.get('/backward', function (req, res) {
     backwards();
-	v_state = vertical_status.going_backwards;
+	v_state = vertical_state.going_backwards;
     res.send('going backwards');
 })
 
@@ -206,7 +212,7 @@ app.get('/sharpRight', function (req, res) {
 })
 
 app.get('/sharpLeft', function (req, res) {
-    startSharpLeft();
+    startSharpLeft();    
     res.send('sharp left');
 })
 

@@ -10,6 +10,7 @@
 <button type="button" onclick="carAction('sharpRight')">Sharp Right</button>
 <button type="button" onclick="carAction('moderateLeft')">Left</button>
 <button type="button" onclick="carAction('sharpLeft')">Sharp Left</button>
+<button type="button" onclick="carAction('stopTurn')">Stop Turning</button>
 
 <button type="button" onclick="carAction('stop')">Stop</button>
 <br/>
@@ -138,6 +139,9 @@ function carAction(action) {
 		case "stop":
 		  xhttp.open("GET", "/stop", true);
 		  break;
+		case "stopTurn":
+		  xhttp.open("GET", "/stopTurning", true);
+		  break;		  
 		case "moderateRight":
 		  xhttp.open("GET", "/moderateRight", true);
 		  break;
