@@ -5,8 +5,12 @@
 <h2>Car Controller</h2>
 <button type="button" onclick="carAction('forward')">Forward</button>
 <button type="button" onclick="carAction('backward')">Backward</button>
-<button type="button" onclick="carAction('right')">Right 90</button>
-<button type="button" onclick="carAction('left')">Left 90</button>
+
+<button type="button" onclick="carAction('moderateRight')">Right</button>
+<button type="button" onclick="carAction('sharpRight')">Sharp Right</button>
+<button type="button" onclick="carAction('moderateLeft')">Left</button>
+<button type="button" onclick="carAction('sharpLeft')">Sharp Left</button>
+
 <button type="button" onclick="carAction('stop')">Stop</button>
 <br/>
 
@@ -134,12 +138,18 @@ function carAction(action) {
 		case "stop":
 		  xhttp.open("GET", "/stop", true);
 		  break;
-		case "right":
-		  xhttp.open("GET", "/right/90", true);
+		case "moderateRight":
+		  xhttp.open("GET", "/moderateRight", true);
 		  break;
-		case "left":
-		  xhttp.open("GET", "/left/90", true);
+		case "sharpRight":
+		  xhttp.open("GET", "/sharpRight", true);
+		  break;		  
+		case "moderateLeft":
+		  xhttp.open("GET", "/moderateLeft", true);
 		  break;
+		case "sharpLeft":
+		  xhttp.open("GET", "/sharpLeft", true);
+		  break;	
   }
   xhttp.send();
 }
