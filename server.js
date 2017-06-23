@@ -49,6 +49,7 @@ function forward(){
 }
 
 function backwards(){
+	console.log('backwards');
 	rightBackwards();
 	leftBackwards();
 	v_state = vertical_state.going_backwards;
@@ -58,6 +59,7 @@ function startModerateRight(){
 	rightStop();
 	switch(v_state){
 		case vertical_state.still:
+		case vertical_state.going_forward:		
 			leftForward();
 			break;
 	}
@@ -67,6 +69,7 @@ function startModerateLeft(){
 	leftStop();
 	switch(v_state){
 		case vertical_state.still:
+		case vertical_state.going_forward:
 			rightForward();
 			break;
 	}
@@ -79,7 +82,7 @@ function startSharpRight(){
 			rightBackwards();
 			leftForward();
 			break;
-		case vertical_state.going_backward:
+		case vertical_state.going_backwards:
 			rightForward();
 			leftBackwards();
 			break;			
@@ -95,7 +98,7 @@ function startSharpLeft(){
 			leftBackwards();
 			rightForward();
 			break;
-		case vertical_state.going_backward:
+		case vertical_state.going_backwards:
 			leftForward();
 			rightBackwards();
 			break;	
@@ -107,15 +110,19 @@ function startSharpLeft(){
 
 
 function stopTurning(){
+	console.log('entered stop turning');
 	switch(v_state){
 		case vertical_state.going_forward:
 			forward();
 			break;
-		case vertical_state.going_backwads:
-			backward();
+		case vertical_state.going_backwards:
+			backwards();
 			break;
 		case vertical_state.still:
 			stop();
+			break;
+		default:
+			console.log('unknown v_state: ' + v_state);
 	}		
 }
 
@@ -217,6 +224,7 @@ app.get('/sharpLeft', function (req, res) {
 })
 
 app.get('/stopTurning', function (req, res) {
+	console.log('/stopTurning');
     stopTurning();
     res.send('stopped turning');
 })
