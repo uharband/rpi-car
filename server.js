@@ -55,6 +55,12 @@ function backwards(){
 	v_state = vertical_state.going_backwards;
 }
 
+function stop(){
+    leftStop();
+    rightStop();
+    v_state = vertical_state.still;
+}
+
 function startModerateRight(){
 	rightStop();
 	switch(v_state){
@@ -106,8 +112,6 @@ function startSharpLeft(){
 			console.log("don't recognize this state: " + v_state);
 	}
 }
-
-
 
 function stopTurning(){
 	console.log('entered stop turning');
@@ -229,86 +233,12 @@ app.get('/stopTurning', function (req, res) {
     res.send('stopped turning');
 })
 
-app.get('/left/:degrees', function (req, res) {    
-    var deg = req.params['degrees'];
-    console.log("turning left " + deg + " degrees");
-    
-    if(status == "stopped"){
-		
-	}
-    else if(status == "forward"){
-		rpio.write(left_forward, rpio.LOW);
-		rpio.write(left_backward, rpio.HIGH);
-		rpio.sleep(0.97);
-		rpio.write(left_backward, rpio.LOW);
-		rpio.write(left_forward, rpio.HIGH);
-	}
-	else if(status == "backward"){
-		rpio.write(left_backward, rpio.LOW);
-		rpio.write(left_forward, rpio.HIGH);
-		rpio.sleep(0.97);
-		rpio.write(left_backward, rpio.HIGH);
-		rpio.write(left_forward, rpio.LOW);
-	}
-	else{
-		console.log("got an unrecognized status" + status + ". stopping");	
-		stop();
-	}
-   
-    
-    res.send('turned left ' + deg);
-})
-
-
-app.get('/right/:degrees', function (req, res) {
-    var deg = req.params['degrees'];
-    console.log("turning right " + deg + " degrees");
-    
-    if(status == "stopped"){
-		
-	}
-    else if(status == "forward"){
-		rpio.write(right_forward, rpio.LOW);
-		rpio.write(right_backward, rpio.HIGH);
-		rpio.sleep(0.97);
-		rpio.write(right_backward, rpio.LOW);
-		rpio.write(right_forward, rpio.HIGH);
-	}
-	else if(status == "backward"){
-		rpio.write(right_backward, rpio.LOW);
-		rpio.write(right_forward, rpio.HIGH);
-		rpio.sleep(0.97);
-		rpio.write(right_forward,rpio.LOW);
-		rpio.write(right_backward,rpio.HIGH);
-	}
-	else{
-		console.log("got an unrecognized status" + status + ". stopping");	
-		stop();
-	}
-   
-    
-    res.send('turned right ' + deg);
-    
-    
-})
-
-
-
-
-
 app.get('/stop', function (req, res) {
     stop();
     res.send('stop');
 })
 
-function stop()
-{
-    rpio.write(right_forward, rpio.LOW);
-    rpio.write(left_forward, rpio.LOW);
-    rpio.write(right_backward, rpio.LOW);
-    rpio.write(left_backward, rpio.LOW);
-    status = "stopped";
-}
+
 
 // setup: open all pins and set them to LOW which is OFF
 rpio.open(right_forward, rpio.OUTPUT, rpio.LOW);

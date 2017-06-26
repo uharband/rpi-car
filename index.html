@@ -6,11 +6,11 @@
 <button type="button" onclick="carAction('forward')">Forward</button>
 </br>
 </br>
-<button type="button" onclick="carAction('sharpRight')">Sharp Right</button>
-<button type="button" onclick="carAction('moderateRight')">Right</button>
-<button type="button" onclick="carAction('stopTurn')">Stop Turning</button>
-<button type="button" onclick="carAction('moderateLeft')">Left</button>
-<button type="button" onclick="carAction('sharpLeft')">Sharp Left</button>
+<button type="button" onmousedown="carAction('sharpRight')" onmouseup="carAction('stopTurn')">Sharp Right</button>
+<button type="button" onmousedown="carAction('moderateRight')" onmouseup="carAction('stopTurn')">Right</button>
+<button type="button" onmousedown="carAction('stopTurn')">Stop Turning</button>
+<button type="button" onmousedown="carAction('moderateLeft')" onmouseup="carAction('stopTurn')">Left</button>
+<button type="button" onmousedown="carAction('sharpLeft')" onmouseup="carAction('stopTurn')">Sharp Left</button>
 <br/>
 <br/>
 <button type="button" onclick="carAction('backward')">Backward</button>
