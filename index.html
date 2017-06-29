@@ -6,11 +6,11 @@
 <button type="button" onclick="carAction('forward')">Forward</button>
 </br>
 </br>
-<button type="button" onmousedown="carAction('sharpRight')" onmouseup="carAction('stopTurn')">Sharp Right</button>
-<button type="button" onmousedown="carAction('moderateRight')" onmouseup="carAction('stopTurn')">Right</button>
-<button type="button" onmousedown="carAction('stopTurn')">Stop Turning</button>
-<button type="button" onmousedown="carAction('moderateLeft')" onmouseup="carAction('stopTurn')">Left</button>
-<button type="button" onmousedown="carAction('sharpLeft')" onmouseup="carAction('stopTurn')">Sharp Left</button>
+<button type="button" id="sharpRight" onmousedown="carAction('sharpRight')" onmouseup="carAction('stopTurn')" ontouchstart="carAction('sharpRight')" ontouchend="carAction('stopTurn')">Sharp Right</button>
+<button type="button" onmousedown="carAction('moderateRight')" onmouseup="carAction('stopTurn')" ontouchstart="carAction('moderateRight')" ontouchend="carAction('stopTurn')">Right</button>
+<button type="button" onmousedown="carAction('stopTurn')" ontouchstart="carAction('sharpRight')" ontouchend="carAction('stopTurn')">Stop Turning</button>
+<button type="button" onmousedown="carAction('moderateLeft')" onmouseup="carAction('stopTurn')" ontouchstart="carAction('moderateLeft')" ontouchend="carAction('stopTurn')">Left</button>
+<button type="button" onmousedown="carAction('sharpLeft')" onmouseup="carAction('stopTurn')" ontouchstart="carAction('sharpLeft')" ontouchend="carAction('stopTurn')">Sharp Left</button>
 <br/>
 <br/>
 <button type="button" onclick="carAction('backward')">Backward</button>
@@ -50,6 +50,7 @@ operation status: <div id="status">
 </div>
 </br/>
 <script>
+
 function enableVideo(enable){
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
