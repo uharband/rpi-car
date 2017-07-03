@@ -12,21 +12,25 @@ var last_executed = 'none'
 var executing = false;
 
 setInterval(function(){
-  work();
-}, 1000); 
+	work();
+	}, 100); 
 
 function work(){
+	//logger.info('requested: ' + requested_operation + ' last: ' + last_executed);
   if(executing){
+	  logger.info('executing - exiting');
     return;
   }
-  if(requested_operation == 'none'){
+  if(requested_operation === 'none'){
     return;
   }
-  if(requested_operation == last_executed){
+  if(requested_operation === last_executed){
+	  //logger.info('requested equals last - exiting');
     return;
   }
   executing = true;
   last_executed = requested_operation;
+  logger.info('about to execute: ' + requested_operation);
   switch(requested_operation){
     case 'forward':
       forward();
@@ -40,20 +44,23 @@ function work(){
     case 'startModerateRight':
       startModerateRight();
       break;
-    case 'startSharpRightRight':
-      startSharpRightRight();
+    case 'startSharpRight':
+      startSharpRight();
       break;
     case 'startModerateLeft':
       startModerateLeft();
       break;
-    case 'startSharpLeftLeft':
-      startSharpLeftLeft();
+    case 'startSharpLeft':
+      startSharpLeft();
       break;
     case 'stopTurning':
       stopTurning();
       break;
 
-  executing = false;
+	logger.info('setting executing to false');
+  
+	}
+	executing = false;
 }
 
 // setup: open all pins and set them to LOW which is OFF
@@ -102,31 +109,31 @@ function leftStop(){
 }
 
 function forward(){
-	logger.info('forward: entered. vertical_state is ' + v_state + " " + vertical_state.get(v_state));
+	logger.info('forward: entered. vertical_state is ' + v_state);
 	rightForward();
 	leftForward();
 	v_state = vertical_state.going_forward;
-	logger.info('forward: exiting');
+	logger.info('forward: exiting. vertical_state is ' + v_state);
 }
 
 function backwards(){
-	logger.info('backwards: entered');
+	logger.info('backwards: entered. vertical_state is ' + v_state);
 	rightBackwards();
 	leftBackwards();
 	v_state = vertical_state.going_backwards;
-	logger.info('backwards: exiting');
+	logger.info('backwards: exiting. vertical_state is ' + v_state);
 }
 
 function stop(){
-	logger.info('stop: entered');
+	logger.info('stop: entered. vertical_state is ' + v_state);
     leftStop();
     rightStop();
     v_state = vertical_state.still;
-    logger.info('stop: exiting');
+    logger.info('stop: exiting. vertical_state is ' + v_state);
 }
 
 function startModerateRight(){
-	logger.info('startModerateRight: entered');
+	logger.info('startModerateRight: entered. vertical_state is ' + v_state);
 	rightStop();
 	switch(v_state){
 		case vertical_state.still:
@@ -138,7 +145,7 @@ function startModerateRight(){
 }
 
 function startModerateLeft(){
-	logger.info('startModerateLeft: entered');
+	logger.info('startModerateLeft: entered. vertical_state is ' + v_state);
 	leftStop();
 	switch(v_state){
 		case vertical_state.still:
@@ -150,7 +157,7 @@ function startModerateLeft(){
 }
 
 function startSharpRight(){
-	logger.info('startSharpRight: entered');
+	logger.info('startSharpRight: entered. vertical_state is ' + v_state);
 	switch(v_state){
 		case vertical_state.still:		
 		case vertical_state.going_forward:
@@ -168,7 +175,7 @@ function startSharpRight(){
 }
 
 function startSharpLeft(){
-	logger.info('startSharpLeft: entered');
+	logger.info('startSharpLeft: entered. vertical_state is ' + v_state);
 	switch(v_state){
 		case vertical_state.still:
 		case vertical_state.going_forward:
@@ -186,7 +193,7 @@ function startSharpLeft(){
 }
 
 function stopTurning(){
-	logger.info('stopTurning: entered');
+	logger.info('stopTurning: entered. v_state is ' + v_state);
 	switch(v_state){
 		case vertical_state.going_forward:
 			forward();
@@ -203,7 +210,12 @@ function stopTurning(){
 	logger.info('stopTurning: exiting');
 }
 
-module.exports.requested_operation = requested_operation;
+function execute(operation){
+	logger.info('execute: entered. operation: ' + operation);
+	requested_operation = operation;
+}
+
+module.exports.execute = execute;
 module.exports.setup = setup;
 module.exports.teardown = teardown;
 module.exports.forward = forward;
@@ -214,4 +226,3 @@ module.exports.startModerateLeft = startModerateLeft;
 module.exports.startSharpRight = startSharpRight;
 module.exports.startSharpLeft = startSharpLeft;
 module.exports.stopTurning = stopTurning;
-
