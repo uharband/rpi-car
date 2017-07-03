@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
-<body>
+<body onload="pageLoaded();">
 
 <h2>Car Controller</h2>
 <button type="button" onclick="carAction('forward')">Forward</button>
 </br>
 </br>
-<button type="button" id="sharpRight" onmousedown="carAction('sharpRight')" onmouseup="carAction('stopTurn')" ontouchstart="carAction('sharpRight')" ontouchend="carAction('stopTurn')">Sharp Right</button>
-<button type="button" onmousedown="carAction('moderateRight')" onmouseup="carAction('stopTurn')" ontouchstart="carAction('moderateRight')" ontouchend="carAction('stopTurn')">Right</button>
-<button type="button" onmousedown="carAction('stopTurn')" ontouchstart="carAction('sharpRight')" ontouchend="carAction('stopTurn')">Stop Turning</button>
-<button type="button" onmousedown="carAction('moderateLeft')" onmouseup="carAction('stopTurn')" ontouchstart="carAction('moderateLeft')" ontouchend="carAction('stopTurn')">Left</button>
-<button type="button" onmousedown="carAction('sharpLeft')" onmouseup="carAction('stopTurn')" ontouchstart="carAction('sharpLeft')" ontouchend="carAction('stopTurn')">Sharp Left</button>
+<button type="button" id="sharpLeft" onmouseup="carAction('stopTurn')" ontouchend="carAction('stopTurn')">Sharp Left</button>
+<button type="button" id="moderateLeft" onmouseup="carAction('stopTurn')" ontouchend="carAction('stopTurn')">Left</button>
+<button type="button" id="stopTurn" onclick="carAction('stopTurn')">Stop Turning</button>
+<button type="button" id="moderateRight" onmouseup="carAction('stopTurn')" ontouchend="carAction('stopTurn')">Right</button>
+<button type="button" id="sharpRight" onmouseup="carAction('stopTurn')" ontouchend="carAction('stopTurn')">Sharp Right</button>
+
+
 <br/>
 <br/>
 <button type="button" onclick="carAction('backward')">Backward</button>
@@ -18,15 +20,15 @@
 </br/>
 <button type="button" onclick="carAction('stop')">Stop</button>
 <br/>
-
+<!--
 <h2>Audio</h2>
 <button type="button" onclick="enableAudio(true)">Turn on Audio</button>
 <button type="button" onclick="enableAudio(false)">Turn off Audio</button>
 <br/>
 
 <audio id="audio" >
-	<source id="audioSource" src='http://10.0.0.4:8080'></source>
-	Your browser does not support the audio format.
+<source id="audioSource" src='http://10.0.0.4:8080'></source>
+Your browser does not support the audio format.
 </audio>
 <br/>
 
@@ -40,125 +42,152 @@
 <img id='video' src='http://10.0.0.4:8082' border="0" width=25%/>
 
 <div>
-	<button type="button" onclick="enableVideo(true)">Turn on Video</button>
-	<button type="button" onclick="enableVideo(false)">Turn off Video</button>
-	<br/>
-	<br/>
+<button type="button" onclick="enableVideo(true)">Turn on Video</button>
+<button type="button" onclick="enableVideo(false)">Turn off Video</button>
+<br/>
+<br/>
 </div>
-
+-->
 operation status: <div id="status">
 </div>
 </br/>
 <script>
+function pageLoaded(){
+document.getElementById("sharpLeft").addEventListener("touchstart", tapOrClick, false);
+document.getElementById("sharpLeft").addEventListener("mousedown", tapOrClick, false);
+
+document.getElementById("moderateLeft").addEventListener("touchstart", tapOrClick, false);
+document.getElementById("moderateLeft").addEventListener("mousedown", tapOrClick, false);
+
+document.getElementById("moderateRight").addEventListener("touchstart", tapOrClick, false);
+document.getElementById("moderateRight").addEventListener("mousedown", tapOrClick, false);
+
+document.getElementById("sharpRight").addEventListener("touchstart", tapOrClick, false);
+document.getElementById("sharpRight").addEventListener("mousedown", tapOrClick, false);
+
+}
+
+function setStatus(status){
+document.getElementById("status").innerHTML = status;
+}
+
+function tapOrClick(event) {
+   //handle tap or click.
+setStatus("tap entered. target: " + event.target.id);
+    event.preventDefault();
+carAction(event.target.id);
+    return false;
+}
+
 
 function enableVideo(enable){
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		console.log('video req returned. state =  ' + this.readyState + ' ' + this.status);
-		if (this.readyState == 4 && this.status == 200) {
-			var video = document.getElementById('video');
-			video.src = 'http://10.0.0.4:8082';
-			console.log('after setting video src: ' + video.src);
-			console.log('before setting');
-			document.getElementById("status").innerHTML = this.responseText;
-			console.log('after setting');
-		}
-	};
-	if(enable){
-		xhttp.open("GET", "/video/on", true);
-	}
-	else{
-		xhttp.open("GET", "/video/off", true);
-	}
-	xhttp.send();
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+console.log('video req returned. state =  ' + this.readyState + ' ' + this.status);
+if (this.readyState == 4 && this.status == 200) {
+var video = document.getElementById('video');
+video.src = 'http://10.0.0.4:8082';
+console.log('after setting video src: ' + video.src);
+console.log('before setting');
+document.getElementById("status").innerHTML = this.responseText;
+console.log('after setting');
+}
+};
+if(enable){
+xhttp.open("GET", "/video/on", true);
+}
+else{
+xhttp.open("GET", "/video/off", true);
+}
+xhttp.send();
 }
 
 function enableAudio(enable){
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		console.log('audio req returned. state =  ' + this.readyState + ' ' + this.status);
-		if (this.readyState == 4 && this.status == 200) {
-			var audio = document.getElementById('audio');
-			var source = document.getElementById('audioSource');
-			if(enable){
-				source.src = 'http://10.0.0.4:8080';
-				audio.play();				
-			}
-			else{
-				source.src = '';
-			}
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+console.log('audio req returned. state =  ' + this.readyState + ' ' + this.status);
+if (this.readyState == 4 && this.status == 200) {
+var audio = document.getElementById('audio');
+var source = document.getElementById('audioSource');
+if(enable){
+source.src = 'http://10.0.0.4:8080';
+audio.play();
+}
+else{
+source.src = '';
+}
 
-			console.log('audio = ' + audio + ', source = ' + source);
-			console.log('after setting audio src: ' + audio.src);
-			console.log('before setting');
-			document.getElementById("status").innerHTML = this.responseText;
-			console.log('after setting');
-		}
-	};
-	if(enable){
-		xhttp.open("GET", "/audio/on", true);
-	}
-	else{
-		xhttp.open("GET", "/audio/off", true);
-	}
-	xhttp.send();
+console.log('audio = ' + audio + ', source = ' + source);
+console.log('after setting audio src: ' + audio.src);
+console.log('before setting');
+document.getElementById("status").innerHTML = this.responseText;
+console.log('after setting');
+}
+};
+if(enable){
+xhttp.open("GET", "/audio/on", true);
+}
+else{
+xhttp.open("GET", "/audio/off", true);
+}
+xhttp.send();
 }
 
 
 
 function audioAction(action){
-	var audio = document.getElementById('audio');
-	var source = document.getElementById('audioSource');
-	switch(action){
-		case 'play':   
-		source.src = 'http://10.0.0.4:8080';
-		audio.play();
-		break;
+var audio = document.getElementById('audio');
+var source = document.getElementById('audioSource');
+switch(action){
+case 'play':   
+source.src = 'http://10.0.0.4:8080';
+audio.play();
+break;
     case 'puase':
-		audio.pause();
-		break;
+audio.pause();
+break;
     case 'stop':
-		audio.pause();
-		audio.source = audio.source;
-		break;
-	}
+audio.pause();
+audio.source = audio.source;
+break;
+}
 }
 
 
 function carAction(action) {
-	document.getElementById("status").innerHTML = "entered " + action;
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			document.getElementById("status").innerHTML =
-			this.responseText;
-		}
-	};
-	switch(action){
-		case "forward":
-		  xhttp.open("GET", "/forward", true);
-		  break;
-		case "backward":
-		  xhttp.open("GET", "/backward", true);
-		  break;
-		case "stop":
-		  xhttp.open("GET", "/stop", true);
-		  break;
-		case "stopTurn":
-		  xhttp.open("GET", "/stopTurning", true);
-		  break;		  
-		case "moderateRight":
-		  xhttp.open("GET", "/moderateRight", true);
-		  break;
-		case "sharpRight":
-		  xhttp.open("GET", "/sharpRight", true);
-		  break;		  
-		case "moderateLeft":
-		  xhttp.open("GET", "/moderateLeft", true);
-		  break;
-		case "sharpLeft":
-		  xhttp.open("GET", "/sharpLeft", true);
-		  break;	
+document.getElementById("status").innerHTML = "entered " + action;
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+if (this.readyState == 4 && this.status == 200) {
+document.getElementById("status").innerHTML =
+this.responseText;
+}
+};
+switch(action){
+case "forward":
+  xhttp.open("GET", "/forward", true);
+  break;
+case "backward":
+  xhttp.open("GET", "/backward", true);
+  break;
+case "stop":
+  xhttp.open("GET", "/stop", true);
+  break;
+case "stopTurn":
+  xhttp.open("GET", "/stopTurning", true);
+  break;  
+case "moderateRight":
+  xhttp.open("GET", "/moderateRight", true);
+  break;
+case "sharpRight":
+  xhttp.open("GET", "/sharpRight", true);
+  break;  
+case "moderateLeft":
+  xhttp.open("GET", "/moderateLeft", true);
+  break;
+case "sharpLeft":
+  xhttp.open("GET", "/sharpLeft", true);
+  break;
   }
   xhttp.send();
 }
@@ -166,4 +195,5 @@ function carAction(action) {
 
 </body>
 </html>
+
 
