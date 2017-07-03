@@ -75,51 +75,52 @@ app.get('/audio/off', function (req, res) {
 
 app.get('/forward', function (req, res) {
 	logger.info('entered /forward');
-    car.forward();
     res.send('going forward');
+    car.requested_operation = 'forward';
+
 })
 
 app.get('/backward', function (req, res) {
 	logger.info('entered /backward');
-    car.backwards();
-    res.send('going backwards');
+  res.send('going backwards');
+  car.requested_operation = 'backwards';
 })
 
 app.get('/moderateRight', function (req, res) {
 	logger.info('entered /moderateRight');
-    car.startModerateRight();
-    res.send('moderate right');
+  res.send('moderate right');
+  car.requested_operation = 'startModerateRight';
 })
 
 app.get('/moderateLeft', function (req, res) {
 	logger.info('entered /moderateLeft');
-    car.startModerateLeft();
-    res.send('moderate left');
+  res.send('moderate left');
+  car.requested_operation = 'startModerateLeft';
 })
 
 app.get('/sharpRight', function (req, res) {
 	logger.info('entered /sharpRight');
-    car.startSharpRight();
-    res.send('sharp right');
+  res.send('sharp right');
+  car.requested_operation = 'startSharpRight';
 })
 
 app.get('/sharpLeft', function (req, res) {
 	logger.info('entered /sharpLeft');
-    car.startSharpLeft();    
-    res.send('sharp left');
+  res.send('sharp left');
+  car.requested_operation = 'startSharpLeft';
 })
 
 app.get('/stopTurning', function (req, res) {
 	
 	logger.info('entered /stopTurning');
-    car.stopTurning();
-    res.send('stopped turning');
+  res.send('stopped turning');
+  car.requested_operation = 'stopTurning';
 })
 
 app.get('/stop', function (req, res) {
 	logger.info('entered /stop');
-    car.stop();
-    res.send('stop');
+  res.send('stop');
+  car.requested_operation = 'stop';
 })
 
 

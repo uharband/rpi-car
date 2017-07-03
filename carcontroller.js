@@ -7,6 +7,55 @@ var left_forward = 13;
 var right_backward = 11;
 var left_backward = 15;
 
+var requested_operation = 'none'
+var last_executed = 'none'
+var executing = false;
+
+setInterval(function(){
+  work();
+}, 1000); 
+
+function work(){
+  if(executing){
+    return;
+  }
+  if(requested_operation == 'none'){
+    return;
+  }
+  if(requested_operation == last_executed){
+    return;
+  }
+  executing = true;
+  last_executed = requested_operation;
+  switch(requested_operation){
+    case 'forward':
+      forward();
+      break;
+    case 'backwards':
+      backwards();
+      break;
+    case 'stop':
+      stop();
+      break;
+    case 'startModerateRight':
+      startModerateRight();
+      break;
+    case 'startSharpRightRight':
+      startSharpRightRight();
+      break;
+    case 'startModerateLeft':
+      startModerateLeft();
+      break;
+    case 'startSharpLeftLeft':
+      startSharpLeftLeft();
+      break;
+    case 'stopTurning':
+      stopTurning();
+      break;
+
+  executing = false;
+}
+
 // setup: open all pins and set them to LOW which is OFF
 function setup(){
 	rpio.open(right_forward, rpio.OUTPUT, rpio.LOW);
@@ -17,9 +66,9 @@ function setup(){
 
 function teardown(){
 	rpio.close(right_forward);
-    rpio.close(right_backward);
-    rpio.close(left_forward);
-    rpio.close(left_backward);
+  rpio.close(right_backward);
+  rpio.close(left_forward);
+  rpio.close(left_backward);
 }
 
 var vertical_state = new Enum(['going_forward','going_backwards','still']);
@@ -154,6 +203,7 @@ function stopTurning(){
 	logger.info('stopTurning: exiting');
 }
 
+module.exports.requested_operation = requested_operation;
 module.exports.setup = setup;
 module.exports.teardown = teardown;
 module.exports.forward = forward;
