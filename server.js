@@ -6,12 +6,22 @@ var shell = require('shelljs');
 var Enum = require('enum');
 var logger = require('./log');
 var car = require('./carcontroller');
+var audio = require('./audiocontroller');
+
 car.setup();
+audio.turnOn(function(error){
+		if(!error){
+			logger.info("started audio");
+		}
+		else{
+			logger.info(error);
+		}
+});
 
 app.use(express.static(__dirname));
 
 
-//video on/off
+// video on/off
 app.get('/video/on', function (req, res) {
     console.log('starting motion');
 	shell.exec('sudo service motion restart', function(code, stdout, stderr) {
@@ -35,37 +45,28 @@ app.get('/video/off', function (req, res) {
 });
 
 
-//audio on/off
+// audio on/off
 app.get('/audio/on', function (req, res) {
     console.log('starting audio at ' + __dirname + '/startAudioStreaming.sh');    
-    shell.exec(__dirname + '/startAudioStreaming.sh', function(code, stdout, stderr) {
-		console.log('Exit code:', code);
-		console.log('Program output:', stdout);
-		console.log('Program stderr:', stderr);
-		console.log('started audio');
-		if(stderr == ''){
-			res.send('started audio');
+	audio.turnOn(function(error){
+		if(error != ""){
+			res.send("started audio");
 		}
 		else{
-			res.send('error while starting audio! ' + stderr);
+			res.send(error);
 		}
-		
 	});
 });
 
 
 app.get('/audio/off', function (req, res) {
     console.log('stopping audio');
-    shell.exec(__dirname +  '/stopAudioStreaming.sh', function(code, stdout, stderr) {
-		console.log('Exit code:', code);
-		console.log('Program output:', stdout);
-		console.log('Program stderr:', stderr);
-		console.log('stopped audio');
-		if(stderr == ''){
-			res.send('stopped audio');
+	audio.turnOff(function(error){
+		if(error != ""){
+			res.send("stopped audio");
 		}
 		else{
-			res.send('error while stopping audio! ' + stderr);
+			res.send(error);
 		}
 	});
 });
@@ -129,11 +130,11 @@ app.get('/stop', function (req, res) {
 
 
 
-var server = app.listen(8081, function () {
+var server = app.listen(8080, function () {
    var host = server.address().address
    var port = server.address().port
    
-   logger.info("car controller application listening at http://%s:%s", host, port)
+   logger.info("raspberry car listening at http://%s:%s", host, port)
 }); 
 
 

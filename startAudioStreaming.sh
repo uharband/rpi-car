@@ -13,4 +13,4 @@ sleep 5
  
 echo "starting http streaming in a screen session..."
 # start http streaming 
-screen -d -m -S stream bash -c "vlc --intf dummy rtp://127.0.0.1:1234 :sout='#transcode{vcodec=none,acodec=mp3,ab=128,channels=2,samplerate=44100}:http{mux=mp3,dst=:8080/}' :sout-keep" 
+screen -d -m -S stream bash -c "vlc --intf dummy rtp://127.0.0.1:1234 :sout='#transcode{vcodec=none,acodec=mp3,ab=128,channels=2,samplerate=44100}:http{mux=mp3,dst=:8081/}' :sout-keep" 

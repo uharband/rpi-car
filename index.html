@@ -6,11 +6,11 @@
 <button type="button" onclick="carAction('forward')">Forward</button>
 </br>
 </br>
-<button type="button" id="sharpLeft" onmouseup="carAction('stopTurn')" ontouchend="carAction('stopTurn')">Sharp Left</button>
-<button type="button" id="moderateLeft" onmouseup="carAction('stopTurn')" ontouchend="carAction('stopTurn')">Left</button>
+<button type="button" id="sharpLeft">Sharp Left</button>
+<button type="button" id="moderateLeft">Left</button>
 <button type="button" id="stopTurn" onclick="carAction('stopTurn')">Stop Turning</button>
-<button type="button" id="moderateRight" onmouseup="carAction('stopTurn')" ontouchend="carAction('stopTurn')">Right</button>
-<button type="button" id="sharpRight" onmouseup="carAction('stopTurn')" ontouchend="carAction('stopTurn')">Sharp Right</button>
+<button type="button" id="moderateRight">Right</button>
+<button type="button" id="sharpRight">Sharp Right</button>
 
 
 <br/>
@@ -20,14 +20,14 @@
 </br/>
 <button type="button" onclick="carAction('stop')">Stop</button>
 <br/>
-<!--
+
 <h2>Audio</h2>
 <button type="button" onclick="enableAudio(true)">Turn on Audio</button>
 <button type="button" onclick="enableAudio(false)">Turn off Audio</button>
 <br/>
 
 <audio id="audio" >
-<source id="audioSource" src='http://10.0.0.4:8080'></source>
+<source id="audioSource" src='http://10.0.0.4:8081'></source>
 Your browser does not support the audio format.
 </audio>
 <br/>
@@ -38,6 +38,7 @@ Your browser does not support the audio format.
 
 
 <br/>
+<!--
 <h2>Video</h2>
 <img id='video' src='http://10.0.0.4:8082' border="0" width=25%/>
 
@@ -50,32 +51,61 @@ Your browser does not support the audio format.
 -->
 operation status: <div id="status">
 </div>
-</br/>
-<script>
+
+<br/>
+<textarea id="extendedStatus" style="width:400px;height:200px"></textarea>
+<script> 
 function pageLoaded(){
+	var audio = document.getElementById('audio');
+	var source = document.getElementById('audioSource');
+	source.src = 'http://' + window.location.hostname + ':8081';
+	audio.play();
+	
 document.getElementById("sharpLeft").addEventListener("touchstart", tapOrClick, false);
 document.getElementById("sharpLeft").addEventListener("mousedown", tapOrClick, false);
+document.getElementById("sharpLeft").addEventListener("touchend", stopTurn, false);
+document.getElementById("sharpLeft").addEventListener("mouseup", stopTurn, false);
+
 
 document.getElementById("moderateLeft").addEventListener("touchstart", tapOrClick, false);
 document.getElementById("moderateLeft").addEventListener("mousedown", tapOrClick, false);
+document.getElementById("moderateLeft").addEventListener("touchend", stopTurn, false);
+document.getElementById("moderateLeft").addEventListener("mouseup", stopTurn, false);
+
 
 document.getElementById("moderateRight").addEventListener("touchstart", tapOrClick, false);
 document.getElementById("moderateRight").addEventListener("mousedown", tapOrClick, false);
+document.getElementById("moderateRight").addEventListener("touchend", stopTurn, false);
+document.getElementById("moderateRight").addEventListener("mouseup", stopTurn, false);
+
 
 document.getElementById("sharpRight").addEventListener("touchstart", tapOrClick, false);
 document.getElementById("sharpRight").addEventListener("mousedown", tapOrClick, false);
+document.getElementById("sharpRight").addEventListener("touchend", stopTurn, false);
+document.getElementById("sharpRight").addEventListener("mouseup", stopTurn, false);
 
 }
 
 function setStatus(status){
-document.getElementById("status").innerHTML = status;
+    console.log(document.getElementById("status").innerHTML + status);
+    document.getElementById("status").innerHTML = status;
+    //var text = document.getElementById("extendedStatus").value + '\n' + status;
+    document.getElementById("extendedStatus").value = document.getElementById("extendedStatus").value  + '\n' + status;
+    document.getElementById("extendedStatus").scrollTop = document.getElementById("extendedStatus").scrollHeight ;
 }
 
 function tapOrClick(event) {
    //handle tap or click.
-setStatus("tap entered. target: " + event.target.id);
+    setStatus('start ' + event.target.id);
     event.preventDefault();
-carAction(event.target.id);
+    carAction(event.target.id);
+    return false;
+}
+
+function stopTurn(event){
+    setStatus('stop ' + event.target.id);
+    event.preventDefault();
+    carAction('stopTurn');
     return false;
 }
 
@@ -140,7 +170,7 @@ var audio = document.getElementById('audio');
 var source = document.getElementById('audioSource');
 switch(action){
 case 'play':   
-source.src = 'http://10.0.0.4:8080';
+source.src = 'http://10.0.0.4:8081';
 audio.play();
 break;
     case 'puase':
@@ -155,45 +185,50 @@ break;
 
 
 function carAction(action) {
-document.getElementById("status").innerHTML = "entered " + action;
-var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = function() {
-if (this.readyState == 4 && this.status == 200) {
-document.getElementById("status").innerHTML =
-this.responseText;
-}
-};
-switch(action){
-case "forward":
-  xhttp.open("GET", "/forward", true);
-  break;
-case "backward":
-  xhttp.open("GET", "/backward", true);
-  break;
-case "stop":
-  xhttp.open("GET", "/stop", true);
-  break;
-case "stopTurn":
-  xhttp.open("GET", "/stopTurning", true);
-  break;  
-case "moderateRight":
-  xhttp.open("GET", "/moderateRight", true);
-  break;
-case "sharpRight":
-  xhttp.open("GET", "/sharpRight", true);
-  break;  
-case "moderateLeft":
-  xhttp.open("GET", "/moderateLeft", true);
-  break;
-case "sharpLeft":
-  xhttp.open("GET", "/sharpLeft", true);
-  break;
-  }
-  xhttp.send();
+    setStatus("carAction entered: " + action);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4){ //done with the request
+            if(this.status == 200) {
+                setStatus(action + ' ok')
+            }
+            else{
+                setStatus(actipon + ' not ok');
+            }
+        }
+    };
+    switch(action){
+        case "forward":
+          xhttp.open("GET", "/forward", true);
+          break;
+        case "backward":
+          xhttp.open("GET", "/backward", true);
+          break;
+        case "stop":
+          xhttp.open("GET", "/stop", true);
+          break;
+        case "stopTurn":
+          xhttp.open("GET", "/stopTurning", true);
+          break;  
+        case "moderateRight":
+          xhttp.open("GET", "/moderateRight", true);
+          break;
+        case "sharpRight":
+          xhttp.open("GET", "/sharpRight", true);
+          break;  
+        case "moderateLeft":
+          xhttp.open("GET", "/moderateLeft", true);
+          break;
+        case "sharpLeft":
+          xhttp.open("GET", "/sharpLeft", true);
+          break;
+    }
+    xhttp.send();
 }
 </script>
 
 </body>
 </html>
+
 
 
