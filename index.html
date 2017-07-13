@@ -8,7 +8,7 @@
 </br>
 <button type="button" id="sharpLeft">Sharp Left</button>
 <button type="button" id="moderateLeft">Left</button>
-<button type="button" id="stopTurn" onclick="carAction('stopTurn')">Stop Turning</button>
+<button type="button" onclick="carAction('stop')">Stop</button>
 <button type="button" id="moderateRight">Right</button>
 <button type="button" id="sharpRight">Sharp Right</button>
 
@@ -21,6 +21,12 @@
 <button type="button" onclick="carAction('stop')">Stop</button>
 <br/>
 
+
+<audio id="audio1" >
+<source id="audioSource1" src="" ></source>
+Your browser does not support the audio format.
+</audio>
+<!--
 <h2>Audio</h2>
 <button type="button" onclick="enableAudio(true)">Turn on Audio</button>
 <button type="button" onclick="enableAudio(false)">Turn off Audio</button>
@@ -30,6 +36,8 @@
 <source id="audioSource" src='http://10.0.0.4:8081'></source>
 Your browser does not support the audio format.
 </audio>
+<br/>
+-->
 <br/>
 
 <button onclick="audioAction('play')">play</button>
@@ -55,11 +63,38 @@ operation status: <div id="status">
 <br/>
 <textarea id="extendedStatus" style="width:400px;height:200px"></textarea>
 <script> 
+function audioAction(action){
+    var audio = document.getElementById('audio1');
+    var source = document.getElementById('audioSource1');
+    switch(action){
+    case 'play':   
+        //alert(document.getElementById('audioSource1').src)
+        //source.src = 'audio.mp3';
+        
+        //audio.load();
+        //alert(document.getElementById('audioSource1').src);
+        audio.play();
+        break;
+    case 'puase':
+        audio.pause();
+        break;
+    case 'stop':
+        audio.pause();
+        audio.source = audio.source;
+        break;
+    }
+}
 function pageLoaded(){
-	var audio = document.getElementById('audio');
-	var source = document.getElementById('audioSource');
-	source.src = 'http://' + window.location.hostname + ':8081';
-	audio.play();
+    var audio = document.getElementById('audio1');
+    var source = document.getElementById('audioSource1');
+    source.src = 'audio.mp3';
+    audio.load();
+    
+	//var audio = document.getElementById('audio');
+	//var source = document.getElementById('audioSource');
+	//source.src = 'http://' + window.location.hostname + ':8081';
+	//audio.play();
+    
 	
 document.getElementById("sharpLeft").addEventListener("touchstart", tapOrClick, false);
 document.getElementById("sharpLeft").addEventListener("mousedown", tapOrClick, false);
@@ -165,23 +200,7 @@ xhttp.send();
 
 
 
-function audioAction(action){
-var audio = document.getElementById('audio');
-var source = document.getElementById('audioSource');
-switch(action){
-case 'play':   
-source.src = 'http://10.0.0.4:8081';
-audio.play();
-break;
-    case 'puase':
-audio.pause();
-break;
-    case 'stop':
-audio.pause();
-audio.source = audio.source;
-break;
-}
-}
+
 
 
 function carAction(action) {

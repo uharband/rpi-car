@@ -4,6 +4,7 @@
   "description": "raspberry pi car controller",
   "main": "server.js",
   "dependencies": {
+    "config": "^1.26.1",
     "enum": "^2.4.0",
     "express": "^4.15.3",
     "rpio": "^0.9.16",

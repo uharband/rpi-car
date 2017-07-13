@@ -1,0 +1,7 @@
+{
+    "modules": {
+        "audio": true,
+        "video": true,
+        "car": false
+    }
+}

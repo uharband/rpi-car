@@ -1,53 +1,67 @@
 var express = require('express');
 var app = express();
-var rpio = require('rpio');
-fs = require('fs');
+var fs = require('fs');
 var shell = require('shelljs');
 var Enum = require('enum');
 var logger = require('./log');
-var car = require('./carcontroller');
+var car;
 var audio = require('./audiocontroller');
+var video = require('./videocontroller');
+var config = require('config');
 
-car.setup();
-audio.turnOn(function(error){
+logger.info('enabled mudules:');
+logger.info(config.modules);
+
+// initialize
+if(config.modules.car){
+    car = require('./carcontroller');
+    car.setup();
+}
+
+if(config.modules.audio){
+    audio.turnOn(function(error){
 		if(!error){
 			logger.info("started audio");
 		}
 		else{
 			logger.info(error);
 		}
-});
+    });
+}
 
+// html static service
 app.use(express.static(__dirname));
 
 
 // video on/off
 app.get('/video/on', function (req, res) {
-    console.log('starting motion');
-	shell.exec('sudo service motion restart', function(code, stdout, stderr) {
-		console.log('Exit code:', code);
-		console.log('Program output:', stdout);
-		console.log('Program stderr:', stderr);
-		console.log('started motion');
-		res.send('started video');
+    logger.info('/video/on entered');    
+	video.turnOn(function(error){
+		if(error != ""){
+			res.send("started video");
+		}
+		else{
+			res.send(error);
+		}
 	});
 });
 
 app.get('/video/off', function (req, res) {
-    console.log('stopping motion');
-    shell.exec('sudo service motion stop', function(code, stdout, stderr) {
-		console.log('Exit code:', code);
-		console.log('Program output:', stdout);
-		console.log('Program stderr:', stderr);
-		console.log('stopped motion');
-		res.send('stopped video');
+    logger.info('/video/off entered');    
+	video.turnOff(function(error){
+		if(error != ""){
+			res.send("stopped video");
+		}
+		else{
+			res.send(error);
+		}
 	});
 });
 
 
 // audio on/off
 app.get('/audio/on', function (req, res) {
-    console.log('starting audio at ' + __dirname + '/startAudioStreaming.sh');    
+    logger.info('starting audio at ' + __dirname + '/startAudioStreaming.sh');    
 	audio.turnOn(function(error){
 		if(error != ""){
 			res.send("started audio");
@@ -60,7 +74,7 @@ app.get('/audio/on', function (req, res) {
 
 
 app.get('/audio/off', function (req, res) {
-    console.log('stopping audio');
+    logger.info('stopping audio');
 	audio.turnOff(function(error){
 		if(error != ""){
 			res.send("stopped audio");
@@ -73,7 +87,6 @@ app.get('/audio/off', function (req, res) {
 
 
 // car controller
-
 app.get('/forward', function (req, res) {
 	logger.info('entered /forward');
     res.send('going forward');
@@ -83,66 +96,65 @@ app.get('/forward', function (req, res) {
 
 app.get('/backward', function (req, res) {
 	logger.info('entered /backward');
-  res.send('going backwards');
-  car.execute('backwards');
+    res.send('going backwards');
+    car.execute('backwards');
 })
 
 app.get('/moderateRight', function (req, res) {
 	logger.info('entered /moderateRight');
-  res.send('moderate right');
-  car.execute('startModerateRight');
+    res.send('moderate right');
+    car.execute('startModerateRight');
 })
 
 app.get('/moderateLeft', function (req, res) {
 	logger.info('entered /moderateLeft');
-  res.send('moderate left');
-  car.execute('startModerateLeft');
+    res.send('moderate left');
+    car.execute('startModerateLeft');
 })
 
 app.get('/sharpRight', function (req, res) {
 	logger.info('entered /sharpRight');
-  res.send('sharp right');
-  car.execute('startSharpRight');
+    res.send('sharp right');
+    car.execute('startSharpRight');
 })
 
 app.get('/sharpLeft', function (req, res) {
 	logger.info('entered /sharpLeft');
-  res.send('sharp left');
-  car.execute('startSharpLeft');
+    res.send('sharp left');
+    car.execute('startSharpLeft');
 })
 
 app.get('/stopTurning', function (req, res) {
 	
 	logger.info('entered /stopTurning');
-  res.send('stopped turning');
-  car.execute('stopTurning');
+    res.send('stopped turning');
+    car.execute('stopTurning');
 })
 
 app.get('/stop', function (req, res) {
 	logger.info('entered /stop');
-  res.send('stop');
-  car.execute('stop');
+    res.send('stop');
+    car.execute('stop');
 })
 
 
 
-
-
-
-
 var server = app.listen(8080, function () {
-   var host = server.address().address
-   var port = server.address().port
-   
-   logger.info("raspberry car listening at http://%s:%s", host, port)
+    var host = server.address().address
+    var port = server.address().port
+    logger.info("raspberry car listening at http://%s:%s", host, port)
 }); 
-
 
 process.stdin.resume();//so the program will not close instantly
 
 function exitHandler(options, err) {
-    car.teardown(); 
     console.log("exiting")
+    if(config.modules.car){
+        car.teardown(); 
+    }
+    if(config.modules.audio){
+        audio.turnOff();
+    }
     if (options.cleanup) console.log('clean');
     if (err) console.log('error: ' + err.stack);
     if (options.exit) process.exit();
