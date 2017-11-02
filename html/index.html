@@ -76,6 +76,13 @@ function pageLoaded(){
     document.getElementById("sharpRight").addEventListener("mousedown", tapOrClick, false);
     document.getElementById("sharpRight").addEventListener("touchend", stopTurn, false);
     document.getElementById("sharpRight").addEventListener("mouseup", stopTurn, false);
+    
+    // play video on startup
+    videoAction('play');
+    
+    // play audio on startup
+    audioAction('play');
+
 }
 
 function tapOrClick(event) {
@@ -160,6 +167,7 @@ function enableVideo(enable){
 }
 
 function videoAction(action){
+	console.log('videoAction: entered. action: ' + action);
     var video = document.getElementById('video');
     switch(action){
         case 'play':           
