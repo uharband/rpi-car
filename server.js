@@ -3,10 +3,10 @@ var app = express();
 var fs = require('fs');
 var shell = require('shelljs');
 var Enum = require('enum');
-var logger = require('./log');
+var logger = require('./lib/log');
 var car;
-var audio = require('./audiocontroller');
-var video = require('./videocontroller');
+var audio = require('./lib/audiocontroller');
+var video = require('./lib/videocontroller');
 var config = require('config');
 
 logger.info('enabled mudules:');
@@ -14,7 +14,7 @@ logger.info(config.modules);
 
 // initialize
 if(config.modules.car){
-    car = require('./carcontroller');
+    car = require('./lib/carcontroller');
     car.setup();
 }
 
@@ -29,8 +29,19 @@ if(config.modules.audio){
     });
 }
 
+if(config.modules.video){
+    video.turnOn(function(error){
+		if(!error){
+			logger.info("started video");
+		}
+		else{
+			logger.info(error);
+		}
+    });
+}
+
 // html static service
-app.use(express.static(__dirname));
+app.use(express.static(__dirname + '/html'));
 
 
 // video on/off
@@ -139,7 +150,7 @@ app.get('/stop', function (req, res) {
 
 
 
-var server = app.listen(8080, function () {
+var server = app.listen(8083, function () {
     var host = server.address().address
     var port = server.address().port
     logger.info("raspberry car listening at http://%s:%s", host, port)
@@ -154,6 +165,10 @@ function exitHandler(options, err) {
     }
     if(config.modules.audio){
         audio.turnOff();
+    }
+    
+    if(config.modules.video){
+        video.turnOff();
     }
     if (options.cleanup) console.log('clean');
     if (err) console.log('error: ' + err.stack);
