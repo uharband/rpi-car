@@ -1,7 +1,12 @@
 {
     "modules": {
-        "audio": true,
-        "video": true,
+        "audio": false,
+        "video": false,
         "car": true
-    }
+    },
+    "speedChangeRate": 200,
+    "speedChangeStep": 10,
+    "speedMin": 50,
+    "speedMax": 100,
+    "pwmRange": 100
 }

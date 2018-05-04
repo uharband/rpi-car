@@ -3,9 +3,11 @@
 <body onload="pageLoaded();">
 
 <h2>Car Controller</h2>
+<button type="button" onclick="carAction('increaseForwardSpeed')">Increase Forward</button>
+<br/><br/>
 <button type="button" onclick="carAction('forward')">Forward</button>
-</br>
-</br>
+<br/>
+<br/>
 <button type="button" id="sharpLeft">Sharp Left</button>
 <button type="button" id="moderateLeft">Left</button>
 <button type="button" onclick="carAction('stop')">Stop</button>
@@ -14,6 +16,8 @@
 <br/>
 <br/>
 <button type="button" onclick="carAction('backward')">Backward</button>
+<br/><br/>
+<button type="button" onclick="carAction('increaseBackwardSpeed')">Increase Backward</button>
 <br/>
 
 <audio id="audio" >
@@ -197,9 +201,15 @@ function carAction(action) {
         case "forward":
           xhttp.open("GET", "/forward", true);
           break;
+        case "increaseForwardSpeed":
+            xhttp.open("GET", "/increaseForwardSpeed", true);
+            break;
         case "backward":
           xhttp.open("GET", "/backward", true);
           break;
+        case "increaseBackwardSpeed":
+            xhttp.open("GET", "/increaseBackwardSpeed", true);
+            break;
         case "stop":
           xhttp.open("GET", "/stop", true);
           break;
