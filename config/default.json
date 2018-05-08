@@ -4,9 +4,9 @@
         "video": false,
         "car": true
     },
-    "speedChangeRate": 200,
-    "speedChangeStep": 10,
-    "speedMin": 50,
-    "speedMax": 100,
-    "pwmRange": 100
+    "speedChangeRate": 1024,
+    "speedChangeStep": 128,
+    "speedMin": 512,
+    "speedMax": 1024,
+    "pwmRange": 1024
 }
