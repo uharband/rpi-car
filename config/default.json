@@ -5,8 +5,8 @@
         "car": true
     },
     "speedChangeRate": 1024,
-    "speedChangeStep": 128,
-    "speedMin": 512,
-    "speedMax": 1024,
-    "pwmRange": 1024
+    "speedChangeStep": 10,
+    "speedMin": 60,
+    "speedMax": 100,
+    "pwmRange": 100
 }
