@@ -4,7 +4,7 @@
         "video": false,
         "car": true
     },
-    "speedChangeRate": 1024,
+    "initialSpeed": 80,
     "speedChangeStep": 10,
     "speedMin": 60,
     "speedMax": 100,
