@@ -1,48 +1,24 @@
 <!DOCTYPE html>
 <html>
-<body onload="pageLoaded();" style="position: fixed; top:0; bottom:0; left:0; right:0;">
-<div style="height:50%;align: middle">
+<body onload="pageLoaded();">
 
-<table style="width: 100%;height:100%" border=1">
-<tr>
-<td style="width:33%">
-<button style="width:100%; height:100%" type="button" id="moderateLeft">Left</button>
-</td>
-<td style="width:33%">
-<table  style="width: 100%;height:100%" >
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('increaseForwardSpeed')">Faster Forward</button>
-</td>
-</tr>
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('forward')">Forward</button>
-</td>
-</tr>
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('stop')">Stop</button>
-</td>
-</tr>
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('backward')">Backwards</button>
-</td>
-</tr>
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('increaseBackwardSpeed')">Faster Backwards</button>
-</td>
-</tr>
-</table>
-</td>
-<td style="width:33%">
-<button style="width:100%; height:100%" type="button" id="moderateRight">Right</button>
-</td>
-</tr>
-</table>
-
+<h2>Car Controller</h2>
+<button type="button" onclick="carAction('increaseForwardSpeed')">Increase Forward</button>
+<br/><br/>
+<button type="button" onclick="carAction('forward')">Forward</button>
+<br/>
+<br/>
+<button type="button" id="sharpLeft">Sharp Left</button>
+<button type="button" id="moderateLeft">Left</button>
+<button type="button" onclick="carAction('stop')">Stop</button>
+<button type="button" id="moderateRight">Right</button>
+<button type="button" id="sharpRight">Sharp Right</button>
+<br/>
+<br/>
+<button type="button" onclick="carAction('backward')">Backward</button>
+<br/><br/>
+<button type="button" onclick="carAction('increaseBackwardSpeed')">Increase Backward</button>
+<br/>
 
 <audio id="audio" >
 <source id="audioSource" src="" ></source>
@@ -60,9 +36,8 @@ Your browser does not support the audio format.
 <button onclick="audioAction('stop')">stop</button>
 <br/>
 
-</div>
-<div style="height:50%; width: 100%;align: middle">
-<img src="image.jpg"  id="video" border="0" height=50% align="right"/>
+<h2>Video</h2>
+<img id='video' border="0" width=25%/>
 <br/>
 <button type="button" onclick="enableVideo(true)">Turn on Video</button>
 <button type="button" onclick="enableVideo(false)">Turn off Video</button>
@@ -71,9 +46,11 @@ Your browser does not support the audio format.
 <button onclick="videoAction('play')">play</button>
 <button onclick="videoAction('stop')">stop</button>
 <br/>
+
+operation status: <div id="status">
 </div>
 
-
+<br/>
 
 <script>
 function setStatus(status){
