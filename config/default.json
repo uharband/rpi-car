@@ -1,7 +1,7 @@
 {
     "modules": {
-        "audio": false,
-        "video": false,
+        "audio": true,
+        "video": true,
         "car": true
     },
     "initialSpeed": 80,

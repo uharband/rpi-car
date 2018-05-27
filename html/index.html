@@ -62,7 +62,7 @@ Your browser does not support the audio format.
 
 </div>
 <div style="height:50%; width: 100%;align: middle">
-<img src="image.jpg"  id="video" border="0" height=50% align="right"/>
+<img src="image.jpg"  id="video" border="0" height=100% align="right"/>
 <br/>
 <button type="button" onclick="enableVideo(true)">Turn on Video</button>
 <button type="button" onclick="enableVideo(false)">Turn off Video</button>
@@ -73,7 +73,9 @@ Your browser does not support the audio format.
 <br/>
 </div>
 
-
+status:
+<div id="status">
+</div>
 
 <script>
 function setStatus(status){
@@ -84,10 +86,6 @@ function setStatus(status){
 }
 
 function pageLoaded(){
-    document.getElementById("sharpLeft").addEventListener("touchstart", tapOrClick, false);
-    document.getElementById("sharpLeft").addEventListener("mousedown", tapOrClick, false);
-    document.getElementById("sharpLeft").addEventListener("touchend", stopTurn, false);
-    document.getElementById("sharpLeft").addEventListener("mouseup", stopTurn, false);
 
     document.getElementById("moderateLeft").addEventListener("touchstart", tapOrClick, false);
     document.getElementById("moderateLeft").addEventListener("mousedown", tapOrClick, false);
@@ -99,10 +97,6 @@ function pageLoaded(){
     document.getElementById("moderateRight").addEventListener("touchend", stopTurn, false);
     document.getElementById("moderateRight").addEventListener("mouseup", stopTurn, false);
 
-    document.getElementById("sharpRight").addEventListener("touchstart", tapOrClick, false);
-    document.getElementById("sharpRight").addEventListener("mousedown", tapOrClick, false);
-    document.getElementById("sharpRight").addEventListener("touchend", stopTurn, false);
-    document.getElementById("sharpRight").addEventListener("mouseup", stopTurn, false);
     
     // play video on startup
     videoAction('play');
