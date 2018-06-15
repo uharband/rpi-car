@@ -37,6 +37,7 @@ if (config.modules.audio) {
 }
 
 if (config.modules.video) {
+    video.setup(dryMode);
     video.turnOn(function (error) {
         if (!error) {
             logger.info("started video");
@@ -49,7 +50,6 @@ if (config.modules.video) {
 
 // html static service
 app.use(express.static(__dirname + '/html'));
-
 
 // ----------------      VIDEO    ----------------------- //
 app.get('/video/on', function (req, res) {
@@ -69,6 +69,35 @@ app.get('/video/off', function (req, res) {
     video.turnOff(function (error) {
         if (error !== "") {
             res.send("stopped video");
+        }
+        else {
+            res.send(error);
+        }
+    });
+});
+
+app.get('/video/configure', function (req, res) {
+
+    var width = (isNaN(parseInt(req.query.width)) ? null:  parseInt(req.query.width));
+    var height = (isNaN(parseInt(req.query.height)) ? null:  parseInt(req.query.height));
+    var jpgQuality = (isNaN(parseInt(req.query.jpgQuality)) ? null:  parseInt(req.query.jpgQuality));
+    var fps = (isNaN(parseInt(req.query.fps)) ? null:  parseInt(req.query.fps));
+    var verticalFlip = null;
+    if(req.query.verticalFlip === undefined) {
+        verticalFlip = null;
+    }
+    else if(req.query.verticalFlip !== 'true' && req.query.verticalFlip !== 'false'){
+        // return error
+        res.send('error: verticalFlip must be true or false');
+    }
+    else{
+        verticalFlip = (req.query.verticalFlip === 'true');
+    }
+
+    logger.info('/video/configure entered');
+    video.configure(width, height, verticalFlip, jpgQuality, fps, function (error) {
+        if (error !== "") {
+            res.send("configured successfully");
         }
         else {
             res.send(error);
@@ -198,11 +227,15 @@ function exitHandler(options, err) {
         car.teardown();
     }
     if (config.modules.audio) {
-        audio.turnOff();
+        audio.turnOff(function () {
+            
+        });
     }
 
     if (config.modules.video) {
-        video.turnOff();
+        video.turnOff(function () {
+            
+        });
     }
     if (options.cleanup) console.log('clean');
     if (err) console.log('error: ' + err.stack);

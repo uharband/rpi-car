@@ -5,7 +5,12 @@
         "car": true
     },
     "video":{
-        "root":"/home/pi/rpi-mjpg-streamer/mjpg-streamer/mjpg-streamer-experimental"
+        "root":"/home/pi/rpi-mjpg-streamer/mjpg-streamer/mjpg-streamer-experimental",
+        "fps": 5,
+        "width": 640,
+        "height": 480,
+        "jpgQuality": 85,
+        "verticalFlip": true
     },
     "initialSpeed": 80,
     "speedChangeStep": 10,
