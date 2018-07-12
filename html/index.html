@@ -6,7 +6,8 @@
 <table style="width: 100%;height:100%" border=1">
 <tr>
 <td style="width:33%">
-<button style="width:100%; height:100%" type="button" id="moderateLeft">Left</button>
+    <button style="width:100%; height:50%" type="button" id="moderateLeft">Left</button>
+    <button style="width:100%; height:50%" type="button" id="sharpLeft">Sharp Left</button>
 </td>
 <td style="width:33%">
 <table  style="width: 100%;height:100%" >
@@ -38,7 +39,8 @@
 </table>
 </td>
 <td style="width:33%">
-<button style="width:100%; height:100%" type="button" id="moderateRight">Right</button>
+    <button style="width:100%; height:50%" type="button" id="moderateRight">Right</button>
+    <button style="width:100%; height:50%" type="button" id="sharpRight">Sharp Right</button>
 </td>
 </tr>
 </table>
@@ -92,10 +94,20 @@ function pageLoaded(){
     document.getElementById("moderateLeft").addEventListener("touchend", stopTurn, false);
     document.getElementById("moderateLeft").addEventListener("mouseup", stopTurn, false);
 
+    document.getElementById("sharpLeft").addEventListener("touchstart", tapOrClick, false);
+    document.getElementById("sharpLeft").addEventListener("mousedown", tapOrClick, false);
+    document.getElementById("sharpLeft").addEventListener("touchend", stopTurn, false);
+    document.getElementById("sharpLeft").addEventListener("mouseup", stopTurn, false);
+
     document.getElementById("moderateRight").addEventListener("touchstart", tapOrClick, false);
     document.getElementById("moderateRight").addEventListener("mousedown", tapOrClick, false);
     document.getElementById("moderateRight").addEventListener("touchend", stopTurn, false);
     document.getElementById("moderateRight").addEventListener("mouseup", stopTurn, false);
+
+    document.getElementById("sharpRight").addEventListener("touchstart", tapOrClick, false);
+    document.getElementById("sharpRight").addEventListener("mousedown", tapOrClick, false);
+    document.getElementById("sharpRight").addEventListener("touchend", stopTurn, false);
+    document.getElementById("sharpRight").addEventListener("mouseup", stopTurn, false);
 
     
     // play video on startup

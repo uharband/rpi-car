@@ -4,13 +4,7 @@ var fs = require('fs');
 var shell = require('shelljs');
 var Enum = require('enum');
 var logger = require('./lib/log');
-var car;
-var audio = require('./lib/audiocontroller');
-var video = require('./lib/videocontroller');
 var config = require('config');
-
-logger.info('enabled mudules:');
-logger.info(config.modules);
 
 var dryMode = false;
 
@@ -19,198 +13,314 @@ if(process.argv.length > 2 && process.argv[2].toLowerCase() === 'drymode'){
     dryMode = true;
 }
 logger.info('dryMode = ' + dryMode);
-// initialize
-if (config.modules.car) {
-    car = require('./lib/carcontroller');
-    car.setup(dryMode);
-}
 
-if (config.modules.audio) {
-    audio.turnOn(function (error) {
-        if (!error) {
-            logger.info("started audio");
-        }
-        else {
-            logger.info(error);
-        }
-    });
-}
+// enabled modules
+logger.info('enabled mudules:');
+logger.info(config.modules);
 
-if (config.modules.video) {
+var car;
+var audio;
+var video;
+
+if(config.modules.video) {
+    video = require('./lib/video/videocontroller');
     video.setup(dryMode);
-    video.turnOn(function (error) {
-        if (!error) {
-            logger.info("started video");
-        }
-        else {
-            logger.info(error);
-        }
-    });
+}
+
+if(config.modules.audio) {
+    audio = require('./lib/audio/audiocontroller');
+    audio.setup(dryMode);
+}
+
+if(config.modules.car) {
+    car = require('./lib/car/carcontroller');
+    car.setup(dryMode);
 }
 
 // html static service
 app.use(express.static(__dirname + '/html'));
 
-// ----------------      VIDEO    ----------------------- //
+/* -------------------------------------------------------
+
+                       VIDEO
+
+ ------------------------------------------------------ */
+
 app.get('/video/on', function (req, res) {
     logger.info('/video/on entered');
-    video.turnOn(function (error) {
-        if (error !== "") {
-            res.send("started video");
-        }
-        else {
-            res.send(error);
-        }
-    });
+
+    if(!config.modules.video){
+        return handleModuleNotConfigured('video', res);
+    }
+    else{
+        video.turnOn(function (error) {
+            if (error === "") {
+                res.send("started video");
+            }
+            else {
+                res.send(error);
+            }
+        });
+    }
 });
 
 app.get('/video/off', function (req, res) {
     logger.info('/video/off entered');
-    video.turnOff(function (error) {
-        if (error !== "") {
-            res.send("stopped video");
-        }
-        else {
-            res.send(error);
-        }
-    });
+
+    if(!config.modules.video){
+        return handleModuleNotConfigured('video', res);
+    }
+    else {
+        video.turnOff(function (error) {
+            if (error !== "") {
+                res.send("stopped video");
+            }
+            else {
+                res.send(error);
+            }
+        });
+    }
 });
 
 app.get('/video/configure', function (req, res) {
-
-    var width = (isNaN(parseInt(req.query.width)) ? null:  parseInt(req.query.width));
-    var height = (isNaN(parseInt(req.query.height)) ? null:  parseInt(req.query.height));
-    var jpgQuality = (isNaN(parseInt(req.query.jpgQuality)) ? null:  parseInt(req.query.jpgQuality));
-    var fps = (isNaN(parseInt(req.query.fps)) ? null:  parseInt(req.query.fps));
-    var verticalFlip = null;
-    if(req.query.verticalFlip === undefined) {
-        verticalFlip = null;
-    }
-    else if(req.query.verticalFlip !== 'true' && req.query.verticalFlip !== 'false'){
-        // return error
-        res.send('error: verticalFlip must be true or false');
-    }
-    else{
-        verticalFlip = (req.query.verticalFlip === 'true');
-    }
-
     logger.info('/video/configure entered');
-    video.configure(width, height, verticalFlip, jpgQuality, fps, function (error) {
-        if (error !== "") {
-            res.send("configured successfully");
+
+    if(!config.modules.video){
+        return handleModuleNotConfigured('video', res);
+    }
+    else {
+        var width = (isNaN(parseInt(req.query.width)) ? null : parseInt(req.query.width));
+        var height = (isNaN(parseInt(req.query.height)) ? null : parseInt(req.query.height));
+        var jpgQuality = (isNaN(parseInt(req.query.jpgQuality)) ? null : parseInt(req.query.jpgQuality));
+        var fps = (isNaN(parseInt(req.query.fps)) ? null : parseInt(req.query.fps));
+        var verticalFlip = null;
+        if (req.query.verticalFlip === undefined) {
+            verticalFlip = null;
+        }
+        else if (req.query.verticalFlip !== 'true' && req.query.verticalFlip !== 'false') {
+            // return error
+            res.send('error: verticalFlip must be true or false');
         }
         else {
-            res.send(error);
+            verticalFlip = (req.query.verticalFlip === 'true');
         }
-    });
+
+
+        video.configure(width, height, verticalFlip, jpgQuality, fps, function (error) {
+            if (error !== "") {
+                res.send("configured successfully");
+            }
+            else {
+                res.send(error);
+            }
+        });
+    }
 });
 
 
-// ----------------      AUDIO    ----------------------- //
+/* -------------------------------------------------------
+
+                       AUDIO
+
+ ------------------------------------------------------ */
 app.get('/audio/on', function (req, res) {
-    logger.info('starting audio at ' + __dirname + '/startAudioStreaming.sh');
-    audio.turnOn(function (error) {
-        if (error !== "") {
-            res.send("started audio");
-        }
-        else {
-            res.send(error);
-        }
-    });
+    logger.info('/audio/on entered');
+
+    if(!config.modules.audio){
+        return handleModuleNotConfigured('audio', res);
+    }
+    else {
+        audio.turnOn(function (error) {
+            if (error !== "") {
+                res.send("started audio");
+            }
+            else {
+                res.send(error);
+            }
+        });
+    }
 });
 
 
 app.get('/audio/off', function (req, res) {
-    logger.info('stopping audio');
-    audio.turnOff(function (error) {
-        if (error !== "") {
-            res.send("stopped audio");
-        }
-        else {
-            res.send(error);
-        }
-    });
+    logger.info('/audio/off entered');
+
+    if(!config.modules.audio){
+        return handleModuleNotConfigured('audio', res);
+    }
+    else {
+        audio.turnOff(function (error) {
+            if (error !== "") {
+                res.send("stopped audio");
+            }
+            else {
+                res.send(error);
+            }
+        });
+    }
 });
 
 
-// car controller
+/* -------------------------------------------------------
+
+                       CAR
+
+ ------------------------------------------------------ */
+
 app.get('/forward', function (req, res) {
     logger.info('entered /forward');
-    res.send('going forward');
-    car.execute('forward');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('going forward');
+        car.execute('forward');
+    }
 
 });
 
 
 app.get('/increaseForwardSpeed', function (req, res) {
     logger.info('entered /increaseForwardSpeed');
-    res.send('increasing forward speed');
-    car.execute('increaseForwardSpeed');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('increasing forward speed');
+        car.execute('increaseForwardSpeed');
+    }
 });
 
 app.get('/increaseBackwardSpeed', function (req, res) {
     logger.info('entered /increaseBackwardSpeed');
-    res.send('increasing backward speed');
-    car.execute('increaseBackwardSpeed');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('increasing backward speed');
+        car.execute('increaseBackwardSpeed');
+    }
 });
 
 
 
 app.get('/backward', function (req, res) {
     logger.info('entered /backward');
-    res.send('going backwards');
-    car.execute('backwards');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('going backwards');
+        car.execute('backwards');
+    }
 });
 
 app.get('/increaseBackwardsSpeed', function (req, res) {
     logger.info('entered /increaseBackwardsSpeed');
-    res.send('increasing backwards speed');
-    car.execute('forward');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('increasing backwards speed');
+        car.execute('forward');
+    }
 });
 
 app.get('/decreaseBackwardsSpeed', function (req, res) {
     logger.info('entered /decreaseBackwardsSpeed');
-    res.send('decreasing backwards speed');
-    car.execute('forward');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('decreasing backwards speed');
+        car.execute('forward');
+    }
 
 });
 
 app.get('/moderateRight', function (req, res) {
     logger.info('entered /moderateRight');
-    res.send('moderate right');
-    car.execute('startModerateRight');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('moderate right');
+        car.execute('startModerateRight');
+    }
 });
 
 app.get('/moderateLeft', function (req, res) {
     logger.info('entered /moderateLeft');
-    res.send('moderate left');
-    car.execute('startModerateLeft');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('moderate left');
+        car.execute('startModerateLeft');
+    }
 });
 
 app.get('/sharpRight', function (req, res) {
     logger.info('entered /sharpRight');
-    res.send('sharp right');
-    car.execute('startSharpRight');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('sharp right');
+        car.execute('startSharpRight');
+    }
 });
 
 app.get('/sharpLeft', function (req, res) {
     logger.info('entered /sharpLeft');
-    res.send('sharp left');
-    car.execute('startSharpLeft');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('sharp left');
+        car.execute('startSharpLeft');
+    }
 });
 
 app.get('/stopTurning', function (req, res) {
-
     logger.info('entered /stopTurning');
-    res.send('stopped turning');
-    car.execute('stopTurning');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('stopped turning');
+        car.execute('stopTurning');
+    }
 });
 
 app.get('/stop', function (req, res) {
     logger.info('entered /stop');
-    res.send('stop');
-    car.execute('stop');
+
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        res.send('stop');
+        car.execute('stop');
+    }
 });
+
+function handleModuleNotConfigured(module, res) {
+    logger.warn(module + ' moduel is not enabled, returning service unavailable');
+    res.status = 503;
+    res.send({err: module + ' module is not enabled. enable it via configuration'});
+}
 
 
 var server = app.listen(8083, function () {
