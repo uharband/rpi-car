@@ -316,6 +316,21 @@ app.get('/stop', function (req, res) {
     }
 });
 
+app.get('/state', function (req, res) {
+    logger.info('entered /state');
+    let direction = req.query.direction;
+    let speed = req.query.speed;
+    logger.info('direction=' + direction + ', speed=' + speed);
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        car.setRequestedState(speed, direction);
+        car.execute('applyState');
+        res.send('state set');
+    }
+});
+
 function handleModuleNotConfigured(module, res) {
     logger.warn(module + ' moduel is not enabled, returning service unavailable');
     res.status = 503;
