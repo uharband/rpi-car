@@ -320,14 +320,15 @@ app.get('/state', function (req, res) {
     logger.info('entered /state');
     let direction = req.query.direction;
     let speed = req.query.speed;
-    logger.info('direction=' + direction + ', speed=' + speed);
+    let eventId = req.query.eventId;
+    logger.info('direction=' + direction + ', speed=' + speed + ', eventId=' + eventId);
     if(!config.modules.car){
         return handleModuleNotConfigured('car', res);
     }
     else {
-        car.setRequestedState(speed, direction);
-        car.execute('applyState');
-        res.send('state set');
+        car.addCommand(speed, direction, eventId, (state) => {
+            res.send({direction: state.direction, speed: state.speed, eventId: state.eventId});
+        });
     }
 });
 

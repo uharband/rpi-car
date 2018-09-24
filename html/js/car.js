@@ -1,3 +1,5 @@
+var eventId = 0;
+
 var joystickR = nipplejs.create({
     zone: document.getElementById('remoteControl'),
     mode: 'static',
@@ -7,15 +9,16 @@ var joystickR = nipplejs.create({
 });
 
 joystickR[0].on('start end dir plain move', function (evt, data) {
+    eventId++;
     switch(evt.type){
         case 'move':
             if(data.direction === undefined || data.distance === undefined){
                 return;
             }
-            setState(data.direction.angle, Math.floor(data.distance/2 + 50));
+            setState(data.direction.angle, Math.floor(data.distance/2 + 50), eventId);
             break;
         case 'end':
-            stopCar();
+            setState('none', 0, eventId);
             break;
     }
     // DO EVERYTHING
@@ -26,36 +29,19 @@ function setStatus(status){
 }
 
 // ---  Car  ---- //
-function setState(direction, speed) {
-    setStatus("setState entered");
+function setState(direction, speed, eventId) {
+    setStatus("setState entered. direction=" + direction + ', speed=' + speed + ', eventId=' + eventId);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4){ //done with the request
             if(this.status == 200) {
-                setStatus('setState ok')
+                setStatus(this.response)
             }
             else{
                 setStatus('setState not ok');
             }
         }
     };
-    xhttp.open("GET", "/state?direction=" + direction + "&speed=" + speed, true);
-    xhttp.send();
-}
-
-function stopCar() {
-    setStatus("stopCar entered");
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4){ //done with the request
-            if(this.status == 200) {
-                setStatus('stop ok')
-            }
-            else{
-                setStatus('stop not ok');
-            }
-        }
-    };
-    xhttp.open("GET", "/stop", true);
+    xhttp.open("GET", "/state?direction=" + direction + "&speed=" + speed + "&eventId=" + eventId, true);
     xhttp.send();
 }
