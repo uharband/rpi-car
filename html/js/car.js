@@ -15,7 +15,11 @@ joystickR[0].on('start end dir plain move', function (evt, data) {
             if(data.direction === undefined || data.distance === undefined){
                 return;
             }
-            setState(data.direction.angle, Math.floor(data.distance/2 + 50), eventId);
+            let speed = Math.floor(data.force * 100);
+            if((speed % 5)){
+                return;
+            }
+            setState(data.direction.angle, Math.floor(data.force * 100), eventId);
             break;
         case 'end':
             setState('none', 0, eventId);
