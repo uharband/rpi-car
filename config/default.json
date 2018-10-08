@@ -13,10 +13,10 @@
         "verticalFlip": true
     },
     "car":{
-        "right_forward_pin": "P-16",
-        "right_backward_pin": "P-18",
-        "left_forward_pin": "P-3",
-        "left_backward_pin": "P-5",
+        "right_forward_pin": "P1-16",
+        "right_backward_pin": "P1-18",
+        "left_forward_pin": "P1-3",
+        "left_backward_pin": "P1-5",
         "minSpeed": 15
     },
     "joystick":{
