@@ -13,11 +13,11 @@
         "verticalFlip": true
     },
     "car":{
-        "right_forward_pin": 16,
-        "right_backward_pin": 18,
-        "left_forward_pin": 3,
-        "left_backward_pin": 5,
-        "minSpeed": 40
+        "right_forward_pin": "P-16",
+        "right_backward_pin": "P-18",
+        "left_forward_pin": "P-3",
+        "left_backward_pin": "P-5",
+        "minSpeed": 15
     },
     "joystick":{
         "maxDistance": 200
