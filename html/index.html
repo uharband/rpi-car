@@ -58,13 +58,24 @@
                  onerror="if (this.src != './img/sunset.jpg') this.src = './img/sunset.jpg';"
             class="videostyle"/>
         </div>
+        <div>
+            <audio controls id="audio" >
+                <source id="audioSource" src="" />
+                Your browser does not support the audio format.
+            </audio>
+        </div>
         <div id="remoteControl"></div>
+
+
         <script src="./dist/nipplejs.js" charset="utf-8"></script>
         <script src="./js/car.js" charset="utf-8"></script>
         <script>
             function pageLoaded(){
-                video = document.getElementById('video');
+                var video = document.getElementById('video');
                 video.src = 'http://' + window.location.hostname + ':8080/?action=stream';
+
+                var source = document.getElementById('audioSource');
+                source.src = 'http://' + window.location.hostname + ':8081'
             }
         </script>
     </body>
