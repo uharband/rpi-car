@@ -13,6 +13,7 @@
             bottom: 0;
             padding: 0;
             margin: 0;
+            background: rgba(0, 255, 0, 0.1);
         }
 
         #video_container {
@@ -21,18 +22,31 @@
             top: 0;
             height: 50%;
             width: 100%;
-            background: rgba(0, 255, 0, 0.1);
+
 			margin-bottom:5px;
         }
 
-        #remoteControl {
+        #audio_container {
+            position: relative;
+            
+            margin-bottom: 5px;
+            margin-top: 5px;
+            width: 200px;
+            margin-right: auto;
+            margin-left: auto;
+            top: 50%;
+
+        }
+
+        #remote_container {
             position: absolute;
             left: 0;
-            top: 50%;
-            height: 50%;
+            top: 60%;
+            height: 40%;
             width: 100%;
-            background: rgba(0, 0, 255, 0.1);
+
         }
+
 		img {
 			max-width: 100%;
 			max-height: 100%;
@@ -49,23 +63,23 @@
             margin-bottom: 5px;
             display: block;
         }
+
         </style>
     </head>
     <body onload="pageLoaded()">
         <div id="video_container">
-
-            <img src="./img/loading.jpg"  id="video" 
+            <img src="./img/loading.jpg"
+                 id="video"
                  onerror="if (this.src != './img/sunset.jpg') this.src = './img/sunset.jpg';"
-            class="videostyle"/>
+                 class="videostyle"/>
         </div>
-        <div>
-            <audio controls id="audio" >
+        <div id="audio_container">
+            <audio controls id="audio" class="audiostyle">
                 <source id="audioSource" src="" />
                 Your browser does not support the audio format.
             </audio>
         </div>
-        <div id="remoteControl"></div>
-
+        <div id="remote_container"></div>
 
         <script src="./dist/nipplejs.js" charset="utf-8"></script>
         <script src="./js/car.js" charset="utf-8"></script>

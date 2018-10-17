@@ -1,7 +1,7 @@
 var eventId = 0;
 
 var joystickR = nipplejs.create({
-    zone: document.getElementById('remoteControl'),
+    zone: document.getElementById('remote_container'),
     mode: 'static',
     position: { left: '50%', top: '50%' },
     color: 'red',
