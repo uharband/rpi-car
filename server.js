@@ -1,12 +1,12 @@
-var express = require('express');
-var app = express();
-var fs = require('fs');
-var shell = require('shelljs');
-var Enum = require('enum');
-var logger = require('./lib/log');
-var config = require('config');
+let express = require('express');
+let app = express();
+let fs = require('fs');
+let shell = require('shelljs');
+let Enum = require('enum');
+let logger = require('./lib/log');
+let config = require('config');
 
-var dryMode = false;
+let dryMode = false;
 
 // get command line args
 if(process.argv.length > 2 && process.argv[2].toLowerCase() === 'drymode'){
@@ -18,9 +18,9 @@ logger.info('dryMode = ' + dryMode);
 logger.info('enabled mudules:');
 logger.info(config.modules);
 
-var car;
-var audio;
-var video;
+let car;
+let audio;
+let video;
 
 if(config.modules.video) {
     video = require('./lib/video/videocontroller');
@@ -89,11 +89,11 @@ app.get('/video/configure', function (req, res) {
         return handleModuleNotConfigured('video', res);
     }
     else {
-        var width = (isNaN(parseInt(req.query.width)) ? null : parseInt(req.query.width));
-        var height = (isNaN(parseInt(req.query.height)) ? null : parseInt(req.query.height));
-        var jpgQuality = (isNaN(parseInt(req.query.jpgQuality)) ? null : parseInt(req.query.jpgQuality));
-        var fps = (isNaN(parseInt(req.query.fps)) ? null : parseInt(req.query.fps));
-        var verticalFlip = null;
+        let width = (isNaN(parseInt(req.query.width)) ? null : parseInt(req.query.width));
+        let height = (isNaN(parseInt(req.query.height)) ? null : parseInt(req.query.height));
+        let jpgQuality = (isNaN(parseInt(req.query.jpgQuality)) ? null : parseInt(req.query.jpgQuality));
+        let fps = (isNaN(parseInt(req.query.fps)) ? null : parseInt(req.query.fps));
+        let verticalFlip = null;
         if (req.query.verticalFlip === undefined) {
             verticalFlip = null;
         }
@@ -316,6 +316,22 @@ app.get('/stop', function (req, res) {
     }
 });
 
+app.get('/state', function (req, res) {
+    logger.info('entered /state');
+    let direction = req.query.direction;
+    let speed = req.query.speed;
+    let eventId = req.query.eventId;
+    logger.info('direction=' + direction + ', speed=' + speed + ', eventId=' + eventId);
+    if(!config.modules.car){
+        return handleModuleNotConfigured('car', res);
+    }
+    else {
+        car.addCommand(speed, direction, eventId, (state) => {
+            res.send({direction: state.direction, speed: state.speed, eventId: state.eventId});
+        });
+    }
+});
+
 function handleModuleNotConfigured(module, res) {
     logger.warn(module + ' moduel is not enabled, returning service unavailable');
     res.status = 503;
@@ -323,9 +339,9 @@ function handleModuleNotConfigured(module, res) {
 }
 
 
-var server = app.listen(8083, function () {
-    var host = server.address().address;
-    var port = server.address().port;
+let server = app.listen(8083, function () {
+    let host = server.address().address;
+    let port = server.address().port;
     logger.info("raspberry car listening at http://%s:%s", host, port)
 });
 

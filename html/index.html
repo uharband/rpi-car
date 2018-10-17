@@ -1,266 +1,99 @@
 <!DOCTYPE html>
 <html>
-<body onload="pageLoaded();" style="position: fixed; top:0; bottom:0; left:0; right:0;">
-<div style="height:50%;align: middle">
-
-<table style="width: 100%;height:100%" border=1">
-<tr>
-<td style="width:33%">
-    <button style="width:100%; height:50%" type="button" id="moderateLeft">Left</button>
-    <button style="width:100%; height:50%" type="button" id="sharpLeft">Sharp Left</button>
-</td>
-<td style="width:33%">
-<table  style="width: 100%;height:100%" >
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('increaseForwardSpeed')">Faster Forward</button>
-</td>
-</tr>
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('forward')">Forward</button>
-</td>
-</tr>
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('stop')">Stop</button>
-</td>
-</tr>
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('backward')">Backwards</button>
-</td>
-</tr>
-<tr style="height: 10%">
-<td>
-<button style="width:100%; height:100%" type="button" onclick="carAction('increaseBackwardSpeed')">Faster Backwards</button>
-</td>
-</tr>
-</table>
-</td>
-<td style="width:33%">
-    <button style="width:100%; height:50%" type="button" id="moderateRight">Right</button>
-    <button style="width:100%; height:50%" type="button" id="sharpRight">Sharp Right</button>
-</td>
-</tr>
-</table>
-
-
-<audio id="audio" >
-<source id="audioSource" src="" ></source>
-Your browser does not support the audio format.
-</audio>
-
-<h2>Audio</h2>
-<button type="button" onclick="enableAudio(true)">Turn on Audio</button>
-<button type="button" onclick="enableAudio(false)">Turn off Audio</button>
-<br/>
-<br/>
-
-<button onclick="audioAction('play')">play</button>
-<button onclick="audioAction('pause')">pause</button>
-<button onclick="audioAction('stop')">stop</button>
-<br/>
-
-</div>
-<div style="height:50%; width: 100%;align: middle">
-<img src="image.jpg"  id="video" border="0" height=100% align="right"/>
-<br/>
-<button type="button" onclick="enableVideo(true)">Turn on Video</button>
-<button type="button" onclick="enableVideo(false)">Turn off Video</button>
-<br/>
-<br/>
-<button onclick="videoAction('play')">play</button>
-<button onclick="videoAction('stop')">stop</button>
-<br/>
-</div>
-
-status:
-<div id="status">
-</div>
-
-<script>
-function setStatus(status){
-    console.log(document.getElementById("status").innerHTML + status);
-    document.getElementById("status").innerHTML = status;
-    //document.getElementById("extendedStatus").value = document.getElementById("extendedStatus").value  + '\n' + status;
-    //document.getElementById("extendedStatus").scrollTop = document.getElementById("extendedStatus").scrollHeight ;
-}
-
-function pageLoaded(){
-
-    document.getElementById("moderateLeft").addEventListener("touchstart", tapOrClick, false);
-    document.getElementById("moderateLeft").addEventListener("mousedown", tapOrClick, false);
-    document.getElementById("moderateLeft").addEventListener("touchend", stopTurn, false);
-    document.getElementById("moderateLeft").addEventListener("mouseup", stopTurn, false);
-
-    document.getElementById("sharpLeft").addEventListener("touchstart", tapOrClick, false);
-    document.getElementById("sharpLeft").addEventListener("mousedown", tapOrClick, false);
-    document.getElementById("sharpLeft").addEventListener("touchend", stopTurn, false);
-    document.getElementById("sharpLeft").addEventListener("mouseup", stopTurn, false);
-
-    document.getElementById("moderateRight").addEventListener("touchstart", tapOrClick, false);
-    document.getElementById("moderateRight").addEventListener("mousedown", tapOrClick, false);
-    document.getElementById("moderateRight").addEventListener("touchend", stopTurn, false);
-    document.getElementById("moderateRight").addEventListener("mouseup", stopTurn, false);
-
-    document.getElementById("sharpRight").addEventListener("touchstart", tapOrClick, false);
-    document.getElementById("sharpRight").addEventListener("mousedown", tapOrClick, false);
-    document.getElementById("sharpRight").addEventListener("touchend", stopTurn, false);
-    document.getElementById("sharpRight").addEventListener("mouseup", stopTurn, false);
-
-    
-    // play video on startup
-    videoAction('play');
-    
-    // play audio on startup
-    audioAction('play');
-
-}
-
-function tapOrClick(event) {
-   //handle tap or click.
-    setStatus('start ' + event.target.id);
-    event.preventDefault();
-    carAction(event.target.id);
-    return false;
-}
-
-function stopTurn(event){
-    setStatus('stop ' + event.target.id);
-    event.preventDefault();
-    carAction('stopTurn');
-    return false;
-}
-
-// ---  Audio  ---- //
-function enableAudio(enable){
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        console.log('audio req returned. state =  ' + this.readyState + ' ' + this.status);
-        if (this.readyState == 4){ //done with the request
-            if(this.status == 200) {
-                setStatus('audio ' + enable + ' ok')
-            }
-            else{
-                setStatus('audio ' + enable + ' not ok');
-            }
+    <head>
+        <meta charset="utf-8">
+        <title>RCar</title>
+        <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5">
+        <style>
+        html, body {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 0;
+            margin: 0;
+            background: rgba(0, 255, 0, 0.1);
         }
-    };
-    if(enable){
-        xhttp.open("GET", "/audio/on", true);
-    }
-    else{
-        xhttp.open("GET", "/audio/off", true);
-    }
-    xhttp.send();
-}
 
-function audioAction(action){
-    var audio = document.getElementById('audio');
-    var source = document.getElementById('audioSource');
-    switch(action){
-        case 'play':
-            source.src = 'http://' + window.location.hostname + ':8081';
-            audio.load();
-            audio.play();
-            break;
-        case 'puase':
-            audio.pause();
-            break;
-        case 'stop':
-            audio.source = '';
-            audio.pause();
-            audio.load();
-            break;
-    }
-}
+        #video_container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 50%;
+            width: 100%;
 
-// ---  Video  ---- //
-function enableVideo(enable){
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        console.log('video req returned. state =  ' + this.readyState + ' ' + this.status);
-        if (this.readyState == 4){ //done with the request
-            if(this.status == 200) {
-                setStatus('video ' + enable + ' ok');
-            }
-            else{
-                setStatus('video ' + enable + ' not ok');
-            }
-        }        
-    };
-    if(enable){
-        xhttp.open("GET", "/video/on", true);
-    }
-    else{
-        xhttp.open("GET", "/video/off", true);
-    }
-    xhttp.send();
-}
-
-function videoAction(action){
-	console.log('videoAction: entered. action: ' + action);
-    var video = document.getElementById('video');
-    switch(action){
-        case 'play':           
-            video.src = 'http://' + window.location.hostname + ':8080/?action=stream';
-            break;
-        case 'stop':
-            video.src = '';
-            break;
-    }
-}
-
-// ---  Car  ---- //
-function carAction(action) {
-    setStatus("carAction entered: " + action);
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4){ //done with the request
-            if(this.status == 200) {
-                setStatus(action + ' ok')
-            }
-            else{
-                setStatus(actipon + ' not ok');
-            }
+			margin-bottom:5px;
         }
-    };
-    switch(action){
-        case "forward":
-          xhttp.open("GET", "/forward", true);
-          break;
-        case "increaseForwardSpeed":
-            xhttp.open("GET", "/increaseForwardSpeed", true);
-            break;
-        case "backward":
-          xhttp.open("GET", "/backward", true);
-          break;
-        case "increaseBackwardSpeed":
-            xhttp.open("GET", "/increaseBackwardSpeed", true);
-            break;
-        case "stop":
-          xhttp.open("GET", "/stop", true);
-          break;
-        case "stopTurn":
-          xhttp.open("GET", "/stopTurning", true);
-          break;
-        case "moderateRight":
-          xhttp.open("GET", "/moderateRight", true);
-          break;
-        case "sharpRight":
-          xhttp.open("GET", "/sharpRight", true);
-          break;
-        case "moderateLeft":
-          xhttp.open("GET", "/moderateLeft", true);
-          break;
-        case "sharpLeft":
-          xhttp.open("GET", "/sharpLeft", true);
-          break;
-    }
-    xhttp.send();
-}
-</script>
 
-</body>
+        #audio_container {
+            position: relative;
+            
+            margin-bottom: 5px;
+            margin-top: 5px;
+            width: 200px;
+            margin-right: auto;
+            margin-left: auto;
+            top: 50%;
+
+        }
+
+        #remote_container {
+            position: absolute;
+            left: 0;
+            top: 60%;
+            height: 40%;
+            width: 100%;
+
+        }
+
+		img {
+			max-width: 100%;
+			max-height: 100%;
+			margin-left: auto;
+			margin-right: auto;
+			margin-bottom: 5px;
+			display: block;			
+		}
+        .videostyle {
+            max-width: 100%;
+            max-height: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        </style>
+    </head>
+    <body onload="pageLoaded()">
+        <div id="video_container">
+            <img src="./img/loading.jpg"
+                 id="video"
+                 onerror="if (this.src != './img/sunset.jpg') this.src = './img/sunset.jpg';"
+                 class="videostyle"/>
+        </div>
+        <div id="audio_container">
+            <audio controls id="audio" class="audiostyle">
+                <source id="audioSource" src="" />
+                Your browser does not support the audio format.
+            </audio>
+        </div>
+        <div id="remote_container"></div>
+
+        <script src="./dist/nipplejs.js" charset="utf-8"></script>
+        <script src="./js/car.js" charset="utf-8"></script>
+        <script>
+            function pageLoaded(){
+                var video = document.getElementById('video');
+                video.src = 'http://' + window.location.hostname + ':8080/?action=stream';
+
+                var audio = document.getElementById('audio');
+                var source = document.getElementById('audioSource');
+                source.src = 'http://' + window.location.hostname + ':8081'
+                audio.load();
+                audio.play();
+            }
+        </script>
+    </body>
 </html>
