@@ -5,7 +5,7 @@
         "car": true
     },
     "video":{
-        "root":"/home/pi/rpi-mjpg-streamer/mjpg-streamer/mjpg-streamer-experimental",
+        "root":"/usr/local/share/mjpg-streamer/",
         "fps": 5,
         "width": 640,
         "height": 480,

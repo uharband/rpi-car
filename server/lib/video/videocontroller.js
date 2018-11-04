@@ -72,7 +72,7 @@ function turnOnInternal(callback){
     let mjpgStreamerPath = path.join(root, 'mjpg_streamer');
     let wwwPath = path.join(root, 'www');
 
-    let command = mjpgStreamerPath + ' -o "output_http.so -w ' + wwwPath + '" -i "input_raspicam.so'
+    let command = 'mjpg_streamer -o "output_http.so -w ' + wwwPath + '" -i "input_raspicam.so'
         + (verticalFlip ? ' -vf' : '')
         + ' -x ' + width + ' -y ' + height
         + ' -quality ' + jpgQuality

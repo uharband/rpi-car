@@ -1,0 +1,1 @@
+mjpg_streamer -o "output_http.so -w /usr/local/share/mjpg-streamer/www" -i "input_raspicam.so -vf"
