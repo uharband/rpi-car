@@ -1,5 +1,7 @@
 # install
 
+echo "installing video..."
+
 # clone mjpg-streamer
 git clone https://github.com/jacksonliam/mjpg-streamer.git
 
@@ -13,3 +15,5 @@ sudo make install
 
 # update modules 
 sudo /bin/su -c "echo 'bcm2835-v4l2' >> /etc/modules"
+
+echo "done installing video..."
