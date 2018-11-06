@@ -2,6 +2,10 @@
 
 echo "installing video..."
 
+rm -rf /tmp/mjpg-streamer
+mkdir /tmp
+cd /tmp
+
 # clone mjpg-streamer
 git clone https://github.com/jacksonliam/mjpg-streamer.git
 

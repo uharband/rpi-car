@@ -1,8 +1,9 @@
 echo "installing server..."
-cd ~
+
 sudo apt-get update
 sudo apt-get install npm -y
-cd rpi-car/server
-npm install
 
+npm --prefix ./server install ./server
+
+echo `pwd`
 echo "done installing server..."

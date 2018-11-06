@@ -1,3 +1,7 @@
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+echo current directory is `pwd`
+
 ./server/install.sh
 ./acccess_point/install.sh
 ./audio/install.sh
