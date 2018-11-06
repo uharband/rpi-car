@@ -124,6 +124,6 @@ sudo apt-get install dnsmasq -y
 sudo service dnsmasq start
 sudo update-rc.d dnsmasq enable
 sudo apt-get install udhcpc -y
-sudo cp ap.sh /usr/bin/ap
+sudo cp access_point/ap.sh /usr/bin/ap
 
 echo "done installing access point..."

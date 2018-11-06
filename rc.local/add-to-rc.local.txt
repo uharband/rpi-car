@@ -2,7 +2,7 @@
 
 
 # start the access point. named raspberry, pw raspberry
-ap.sh raspberry raspberry
+ap raspberry raspberry
 
 # add the raspberry camera as a /dev/video0 device
 # the mgpeg-streamer will look for that device
