@@ -3,9 +3,8 @@ echo "  --------  starting installing  ---------------
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 echo current directory is `pwd`
-
-./server/install.sh
 ./access_point/install.sh
+./server/install.sh
 ./audio/install.sh
 ./video/install.sh
 
