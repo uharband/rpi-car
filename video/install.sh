@@ -1,6 +1,6 @@
 # install
 
-echo "  --------  starting installing video  ---------------
+echo "  --------  starting installing video  --------------- "
 
 rm -rf /tmp/mjpg-streamer
 mkdir /tmp
@@ -20,4 +20,4 @@ sudo make install
 # update modules 
 sudo /bin/su -c "echo 'bcm2835-v4l2' >> /etc/modules"
 
-echo "  --------  done installing video  ---------------
+echo "  --------  done installing video  --------------- "
