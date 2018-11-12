@@ -1,6 +1,6 @@
 #1. Install the necessary software------------------------------
 
-echo "installing access point..."
+echo "  --------  starting installing access_point  ---------------
 
 sudo apt-get update
 sudo apt-get install hostapd udhcpd -y
@@ -44,7 +44,6 @@ echo "iface eth0 inet dhcp" >> $x
 echo "" >> $x
 echo "allow-hotplug wlan0" >> $x
 echo "iface wlan0 inet dhcp" >> $x
-echo "    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf" >> $x
 echo "    wireless-power off" >> $x
 echo "" >> $x
 echo "iface default inet dhcp" >> $x
@@ -73,18 +72,8 @@ sudo chmod --reference=/etc/network/interfaces $x
 sudo chown --reference=/etc/network/interfaces $x
 sudo mv $x  /etc/network/interfaces.ap
 sudo chmod --reference /etc/network/interfaces.bk /etc/network/interfaces.ap
-#Config /etc/wpa_supplicant/wpa_supplicant.conf
-touch $x
-sudo rm -rf /etc/wpa_supplicant/wpa_supplicant.conf
-sudo mkdir /etc/wpa_supplicant
-sudo touch /etc/wpa_supplicant/wpa_supplicant.conf
-echo "ctrl_interface=/var/run/wpa_supplicant" >> $x
-echo "update_config=1" >> $x
-echo "network={" >> $x
-echo "        ssid=\"raspberry\"" >> $x
-echo "        psk=\"raspberry\"" >> $x
-echo "}" >> $x
-sudo mv $x /etc/wpa_supplicant/wpa_supplicant.conf
+
+
 
 #3. Configure HostAPD------------------------------------------------
 touch $x
@@ -126,4 +115,4 @@ sudo update-rc.d dnsmasq enable
 sudo apt-get install udhcpc -y
 sudo cp access_point/ap.sh /usr/bin/ap
 
-echo "done installing access point..."
+echo "  --------  done installing access_point  ---------------
