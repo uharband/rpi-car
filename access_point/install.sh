@@ -1,6 +1,11 @@
 #1. Install the necessary software------------------------------
 
+echo ""
+echo "  ----------------------------------------------------------- "
+echo ""
 echo "  --------  starting installing access_point  --------------- "
+echo ""
+echo "  ----------------------------------------------------------- "
 
 sudo apt-get update
 sudo apt-get install hostapd udhcpd -y
@@ -115,4 +120,10 @@ sudo update-rc.d dnsmasq enable
 sudo apt-get install udhcpc -y
 sudo cp access_point/ap.sh /usr/bin/ap
 
-echo "  --------  done installing access_point  --------------- "
+echo ""
+echo "  ----------------------------------------------------------- "
+echo ""
+echo "  -----------  done installing access_point  ---------------- "
+echo ""
+echo "  ----------------------------------------------------------- "
+

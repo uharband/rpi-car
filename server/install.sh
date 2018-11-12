@@ -1,4 +1,9 @@
-echo "  --------  starting installing server  --------------- "
+echo ""
+echo "  ----------------------------------------------------------- "
+echo ""
+echo "  --------  starting installing server  --------------------- "
+echo ""
+echo "  ----------------------------------------------------------- "
 
 sudo apt-get update
 
@@ -10,4 +15,9 @@ npm --prefix ./server install ./server
 
 echo `pwd`
 
-echo "  --------  done installing server  --------------- "
+echo ""
+echo "  ----------------------------------------------------------- "
+echo ""
+echo "  --------  done installing server  ------------------------- "
+echo ""
+echo "  ----------------------------------------------------------- "
