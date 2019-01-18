@@ -1,4 +1,6 @@
-# install
+#!/bin/bash
+scriptdir="$(dirname "$0")"
+cd "$scriptdir"
 
 echo ""
 echo "  ----------------------------------------------------------- "
@@ -7,6 +9,7 @@ echo "  --------  starting installing video (mjpg-streamer) ------- "
 echo ""
 echo "  ----------------------------------------------------------- "
 
+echo " working directory is " `pwd`
 
 rm -rf /tmp/mjpg-streamer
 mkdir /tmp
