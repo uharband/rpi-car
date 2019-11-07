@@ -325,6 +325,7 @@ function generateInputCommandRpiCam(){
     if(timestamp){
         inputCommand += ' --timestamp';
     }
+    inputCommand += '"';
     return inputCommand;
 }
 
@@ -342,6 +343,7 @@ function generateInputCommandUvc(){
     if(timestamp){
         inputCommand += ' --timestamp';
     }
+    inputCommand += '"';
     return inputCommand;
 }
 
