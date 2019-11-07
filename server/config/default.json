@@ -1,16 +1,18 @@
 {
     "modules": {
-        "audio": true,
+        "audio": false,
         "video": true,
-        "car": true
+        "car": false
     },
     "video":{
-        "root":"/usr/local/share/mjpg-streamer/",
+        "cameraType": "usb-camera",
+        "root":"/home/pi/mjpg-streamer/",
         "fps": 5,
         "width": 640,
         "height": 480,
         "jpgQuality": 85,
-        "verticalFlip": true
+        "verticalFlip": true,
+        "port": "8090"
     },
     "car":{
         "right_forward_pin": "P1-16",

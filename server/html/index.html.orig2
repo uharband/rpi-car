@@ -175,7 +175,7 @@ function videoAction(action){
     var video = document.getElementById('video');
     switch(action){
         case 'play':           
-            video.src = 'http://' + window.location.hostname + ':8080/?action=stream';
+            video.src = 'http://' + window.location.hostname + ':8090/?action=stream';
             break;
         case 'stop':
             video.src = '';

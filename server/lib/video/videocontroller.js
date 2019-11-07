@@ -36,9 +36,23 @@ let height;
 let verticalFlip;
 let jpgQuality;
 let fps;
+let timestamp;
+let port;
+let inputCommand;
+
+const InputType = {
+    raspberry_camera: 'input_raspicam.so',
+    usb_camera: 'input_uvc.so',
+    unknown: 'unknown'
+};
+let inputType = InputType.unknown;
 
 function turnOn(callback){
 	logger.info('video turnOn entered');
+
+    resolveConfiguration();
+
+    let command = generateCommand();
 
 	if(dryMode){
 	    playing = true;
@@ -57,29 +71,15 @@ function turnOn(callback){
 	        callback(null);
         }
         else{
-            turnOnInternal((err)=>{
+            turnOnInternal(command, (err)=>{
                 callback(err);
             });
         }
     });
 }
 
-function turnOnInternal(callback){
+function turnOnInternal(command, callback){
     logger.info('turnOnInternal entered');
-
-    resolveConfiguration();
-
-    let mjpgStreamerPath = path.join(root, 'mjpg_streamer');
-    let wwwPath = path.join(root, 'www');
-
-    let command = 'mjpg_streamer -o "output_http.so -w ' + wwwPath + '" -i "input_raspicam.so'
-        + (verticalFlip ? ' -vf' : '')
-        + ' -x ' + width + ' -y ' + height
-        + ' -quality ' + jpgQuality
-        + ' -fps ' + fps
-        + '"';
-
-    logger.info('launch mjpg_streamer command: ' + command);
 
     playing = true;
 
@@ -245,6 +245,8 @@ function resolveConfiguration(){
     verticalFlip = config.video.verticalFlip;
     jpgQuality = config.video.jpgQuality;
     fps = config.video.fps;
+    timestamp = config.video.timestamp;
+    port = config.video.port;
 
     // look for overrides
 	let userConfig = null;
@@ -268,9 +270,82 @@ function resolveConfiguration(){
             if(userConfig.video.fps !== undefined){
                 fps = userConfig.video.fps;
             }
+            if(userConfig.video.timestamp !== undefined){
+                timestamp = userConfig.video.timestamp;
+            }
         }
     }
+
+    // camera type
+    switch(config.video.cameraType){
+        case 'raspberry':
+        case 'raspberry-camera':
+        case 'raspberry-cam':
+        case 'raspi-cam':
+        case 'raspicam':
+            inputType = InputType.raspberry_camera;
+            break;
+        case 'usb-camera':
+        case 'usb-cam':
+            inputType = InputType.usb_camera;
+            break;
+        default:
+            inputType = InputType.unknown;
+    }
 }
+
+function generateCommand(){
+    let inputCommand = generateInputCommand();
+    let outputCommand = generateOutputCommand();
+    let command = 'mjpg_streamer ' + inputCommand + outputCommand
+    logger.info('launch mjpg_streamer command: ' + command);
+}
+
+function generateOutputCommand(){
+    let wwwPath = path.join(root, 'www');
+    let listeningPort = port ? '--port ' + port : '';
+    return ' -o "output_http.so ' + listeningPort + ' -w ' + wwwPath + '"';
+}
+
+function generateInputCommand() {
+    return inputType === InputType.raspberry_camera ? generateInputCommandRpiCam() : generateInputCommandUvc();
+}
+
+function generateInputCommandRpiCam(){
+    inputCommand = ' -i "input_uvc.so ';
+    if(width && height){
+        inputCommand += ' --resolution ' + width + 'x' + height;
+    }
+    if(fps){
+        inputCommand += ' --fps ' + fps;
+    }
+    if(jpgQuality){
+        inputCommand += ' --quality ' + jpgQuality;
+    }
+    if(timestamp){
+        inputCommand += ' --timestamp';
+    }
+    return inputCommand;
+}
+
+function generateInputCommandUvc(){
+    inputCommand = ' -i "input_raspicam.so ';
+    if(width && height){
+        inputCommand += ' --width ' + width + ' --height ' + height;
+    }
+    if(fps){
+        inputCommand += ' --framerate ' + fps;
+    }
+    if(jpgQuality){
+        inputCommand += ' --quality ' + jpgQuality;
+    }
+    if(timestamp){
+        inputCommand += ' --timestamp';
+    }
+    return inputCommand;
+}
+
+
 
 
 module.exports.setup = setup;
