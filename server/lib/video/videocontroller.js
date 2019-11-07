@@ -323,9 +323,6 @@ function generateInputCommandUvc(){
     if(jpgQuality){
         inputCommand += ' --quality ' + jpgQuality;
     }
-    if(verticalFlip){
-        inputCommand += ' --vf';
-    }
     if(timestamp){
         inputCommand += ' --timestamp';
     }
@@ -343,6 +340,9 @@ function generateInputCommandRpiCam(){
     }
     if(jpgQuality){
         inputCommand += ' --quality ' + jpgQuality;
+    }
+    if(verticalFlip){
+        inputCommand += ' --vf';
     }
     if(timestamp){
         inputCommand += ' --timestamp';
