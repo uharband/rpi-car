@@ -6,7 +6,7 @@
     },
     "video":{
         "cameraType": "usb-camera",
-        "root":"/home/pi/mjpg-streamer/",
+        "root":"/home/pi/mjpg-streamer/mjpg-streamer-experimental",
         "fps": 5,
         "width": 640,
         "height": 480,

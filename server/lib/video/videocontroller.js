@@ -89,7 +89,7 @@ function turnOnInternal(command, callback){
 
     mjpg_streamer_process = child_process.exec(command, {
         env: {
-            LD_LIBRARY_PATH: "/home/pi/rpi-mjpg-streamer/mjpg-streamer/mjpg-streamer-experimental"
+            LD_LIBRARY_PATH: config.video.root
         },
         detached: true
     });
@@ -299,6 +299,7 @@ function generateCommand(){
     let outputCommand = generateOutputCommand();
     let command = 'mjpg_streamer ' + inputCommand + outputCommand
     logger.info('launch mjpg_streamer command: ' + command);
+    return command;
 }
 
 function generateOutputCommand(){
@@ -321,6 +322,9 @@ function generateInputCommandRpiCam(){
     }
     if(jpgQuality){
         inputCommand += ' --quality ' + jpgQuality;
+    }
+    if(verticalFlip){
+        inputCommand += ' --vf';
     }
     if(timestamp){
         inputCommand += ' --timestamp';
