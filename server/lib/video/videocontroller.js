@@ -312,8 +312,8 @@ function generateInputCommand() {
     return inputType === InputType.raspberry_camera ? generateInputCommandRpiCam() : generateInputCommandUvc();
 }
 
-function generateInputCommandRpiCam(){
-    inputCommand = ' -i "input_raspicam.so ';
+function generateInputCommandUvc(){
+    inputCommand = ' -i "input_uvc.so ';
     if(width && height){
         inputCommand += ' --resolution ' + width + 'x' + height;
     }
@@ -333,8 +333,8 @@ function generateInputCommandRpiCam(){
     return inputCommand;
 }
 
-function generateInputCommandUvc(){
-    inputCommand = ' -i "input_uvc.so ';
+function generateInputCommandRpiCam(){
+    inputCommand = ' -i "input_raspicam.so ';
     if(width && height){
         inputCommand += ' --width ' + width + ' --height ' + height;
     }
