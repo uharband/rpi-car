@@ -313,7 +313,7 @@ function generateInputCommand() {
 }
 
 function generateInputCommandRpiCam(){
-    inputCommand = ' -i "input_uvc.so ';
+    inputCommand = ' -i "input_raspicam.so ';
     if(width && height){
         inputCommand += ' --resolution ' + width + 'x' + height;
     }
@@ -334,7 +334,7 @@ function generateInputCommandRpiCam(){
 }
 
 function generateInputCommandUvc(){
-    inputCommand = ' -i "input_raspicam.so ';
+    inputCommand = ' -i "input_uvc.so ';
     if(width && height){
         inputCommand += ' --width ' + width + ' --height ' + height;
     }
