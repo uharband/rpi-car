@@ -5,7 +5,7 @@
         "car": false
     },
     "video":{
-        "cameraType": "usb-camera",
+        "cameraType": "raspberry-camera",
         "root":"/home/pi/mjpg-streamer/mjpg-streamer-experimental",
         "fps": 5,
         "width": 640,
