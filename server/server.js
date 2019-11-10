@@ -347,25 +347,53 @@ let server = app.listen(8080, function () {
 
 process.stdin.resume();//so the program will not close instantly
 
-function exitHandler(options, err) {
-    console.log("exiting");
+function shutdwon(callback){
+    let componentsRequiringShutdown = 0;
+    if(config.modules.car){
+        componentsRequiringShutdown++;
+    }
+    if(config.modules.audio){
+        componentsRequiringShutdown++;
+    }
+    if(config.modules.video){
+        componentsRequiringShutdown++;
+    }
+
     if (config.modules.car) {
-        car.teardown();
+        car.teardown(()=>{
+            componentsRequiringShutdown--;
+            if(componentsRequiringShutdown === 0){
+                callback();
+            }
+        });
+
     }
     if (config.modules.audio) {
-        audio.turnOff(function () {
-            
+        audio.turnOff(() => {
+            componentsRequiringShutdown--;
+            if(componentsRequiringShutdown === 0){
+                callback();
+            }
         });
     }
 
     if (config.modules.video) {
-        video.turnOff(function () {
-            
+        video.turnOff(() => {
+            componentsRequiringShutdown--;
+            if(componentsRequiringShutdown === 0){
+                callback();
+            }
         });
     }
-    if (options.cleanup) console.log('clean');
-    if (err) console.log('error: ' + err.stack);
-    if (options.exit) process.exit();
+}
+function exitHandler(options, err) {
+    console.log("exiting");
+    shutdwon(() =>{
+        if (options.cleanup) console.log('clean');
+        if (err) console.log('error: ' + err.stack);
+        if (options.exit) process.exit();
+    });
+
 }
 
 //do something when app is closing

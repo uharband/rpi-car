@@ -73,9 +73,9 @@ function setup(_dryMode) {
     });
 }
 
-function teardown() {
+function teardown(callback) {
     if(dryMode){
-        return;
+        return callback();
     }
     if(right_forward !== null && right_forward !== undefined){
         right_forward.destroy();
@@ -89,6 +89,7 @@ function teardown() {
     if(left_backwards !== null && left_backwards !== undefined){
         left_backwards.destroy();
     }
+    return callback();
 }
 
 function work() {

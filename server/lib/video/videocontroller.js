@@ -144,8 +144,10 @@ function isRunning(callback){
 function turnOff(callback){
 	logger.info('turnOff entered');
 
+	// set the state to not playing
+    playing = false;
+
     if(dryMode){
-        playing = false;
         return callback(null);
     }
 
