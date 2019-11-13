@@ -25,6 +25,7 @@ let path = require('path');
 let fs = require('fs');
 let logger = require('../log');
 let child_process = require('child_process');
+let format = require('dateformat');
 
 let userConfigFile = path.join(__dirname, '..', 'config', 'user.json');
 let mjpg_streamer_process = null;
@@ -64,7 +65,6 @@ function turnOn(callback){
 	    if(err){
 	        return callback(err);
         }
-	    logger.info('is running returned ' + running);
 
 	    //already running, nothing to do
 	    if(running){
@@ -134,7 +134,9 @@ function isRunning(callback){
     shell.exec('ps -ef|grep mjpg_streamer|wc -l', function(code, stdout, stderr) {
         if(stdout){
             logger.info('after running ps -ef|grep mjpg_streamer|wc -l stdout is ' + stdout);
-            return callback(null, (parseInt(stdout)>2));
+            let isRunning = parseInt(stdout)>2;
+            logger.info('isRunning: ' + isRunning);
+            return callback(null, isRunning);
         }
         logger.error('stdout is empty. stderr is: ' + stderr);
         callback(new Error(stderr));
@@ -151,7 +153,7 @@ function turnOff(callback){
         return callback(null);
     }
 
-    logger.info('sending SIGKILL to the child sh process' + (mjpg_streamer_process !== null ? ' pid is ' + mjpg_streamer_process.pid : ''));
+    logger.info('killing the child sh process' + (mjpg_streamer_process !== null ? ' pid is ' + mjpg_streamer_process.pid : ''));
     if(mjpg_streamer_process !== null){
         try{
             mjpg_streamer_process.kill('SIGKILL');
@@ -163,27 +165,24 @@ function turnOff(callback){
 
 
     logger.info('sending SIGINT to mjpg_streamer');
-    shell.exec('killall -SIGINT mjpg_streamer', function(code, stdout, stderr) {
+    shell.exec('killall -9 mjpg_streamer', function(code, stdout, stderr) {
         logger.info('after executing killall -SIGINT mjpg_streamer ---');
         logger.info('mjpg_streamer stop: Exit code:', code);
-        logger.info('mjpg_streamer stop: Program output:', stdout);
-        logger.info('mjpg_streamer stop: Program stderr:', stderr);
-        logger.info('mjpg_streamer stop: complete. sleeping for 2 sec');
+        logger.info('mjpg_streamer stop: complete. sleeping for 1 sec');
         setTimeout(function(){
             logger.info('mjpg_streamer stop: after sleeping');
             isRunning((err, running) => {
                 if(err){
-                    callback(err);
+                    return callback(err);
                 }
-                else if(running === true){
+                if(running){
                    callback(new Error('still running after trying to kill mjpg_streamer...'));
                 }
                 else{
-                    playing = false;
                     callback(null);
                 }
             });
-        }, 2000);
+        }, 1000);
     });
 }
 
@@ -197,6 +196,20 @@ function restart(cb) {
 			cb(err);
 		});
 	});
+}
+
+function takeSnapshot(callback){
+    let snapshotLabel = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-') + '.jpg';
+    let snapshotLocation = path.join(__dirname, 'snapshots', snapshotLabel);
+    shell.exec('ffmpeg -f MJPEG -y -i http://localhost:8080/?action=snapshot -r 1 -vframes 1 -q:v 1 ' + snapshotLocation, function(code, stdout, stderr) {
+        if(code === 0){
+            logger.info('takeSnapshot: success. saved to ' + snapshotLocation)
+            callback(null, '/snapshots/' + snapshotLocation);
+        }
+        else{
+            logger.error('take snapshot: error. ' + stderr);
+        }
+    });
 }
 
 function setup(_dryMode) {
@@ -353,6 +366,11 @@ function generateInputCommandRpiCam(){
     return inputCommand;
 }
 
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
 
 
 
@@ -360,4 +378,4 @@ module.exports.setup = setup;
 module.exports.turnOn = turnOn;
 module.exports.turnOff = turnOff;
 module.exports.configure = configure;
-
+module.exports.takeSnapshot = takeSnapshot;

@@ -40,6 +40,9 @@ if(config.modules.car) {
 // html static service
 app.use(express.static(__dirname + '/html'));
 
+// static serving of snapshots
+app.use(express.static(__dirname + '/snapshots'));
+
 /* -------------------------------------------------------
 
                        VIDEO
@@ -74,6 +77,25 @@ app.get('/video/off', function (req, res) {
         video.turnOff(function (error) {
             if (error !== "") {
                 res.send("stopped video");
+            }
+            else {
+                res.send(error);
+            }
+        });
+    }
+});
+
+app.post('/video/takesnapshot', function (req, res) {
+    logger.info('/video/takesnapshot entered');
+
+    if(!config.modules.video){
+        return handleModuleNotConfigured('video', res);
+    }
+    else {
+        video.takeSnapshot(function (error, snapshot) {
+            if (error !== "") {
+                res.set('Location', snapshot);
+                res.send("snapshot taken successfully: " + snapshot);
             }
             else {
                 res.send(error);

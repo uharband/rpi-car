@@ -30,7 +30,7 @@ DELETE /video/stream
 
 capture snapshot
 ```
-POST /video/snapshot
+POST /video/snapshots
 ```
 
 start recording video
