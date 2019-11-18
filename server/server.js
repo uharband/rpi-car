@@ -410,6 +410,11 @@ function shutdwon(callback){
     }
 }
 
+process.on('SIGINT', () =>{
+    shutdwon(() => {
+        logger.info('exiting');
+    });
+});
 
 //do something when app is closing
 process.on('exit', () =>{

@@ -28,7 +28,8 @@ let child_process = require('child_process');
 let format = require('dateformat');
 
 let userConfigFile = path.join(__dirname, '..', 'config', 'user.json');
-let snapshotsDirectory = path.join(__dirname, '..','app', 'snapshots');
+let snapshotsDirectory = 'snapshots';
+let snapshotsFullPath = path.join(__dirname, '..', '..','app', snapshotsDirectory);
 let mjpg_streamer_process = null;
 let playing = false;
 let dryMode = false;
@@ -199,11 +200,11 @@ function restart(cb) {
 
 function takeSnapshot(callback){
     let snapshotLabel = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-') + '.jpg';
-    let snapshotLocation = path.join(snapshotsDirectory, snapshotLabel);
+    let snapshotLocation = path.join(snapshotsFullPath, snapshotLabel);
     shell.exec('ffmpeg -f MJPEG -y -i http://localhost:' + port + '/?action=snapshot -r 1 -vframes 1 -q:v 1 ' + snapshotLocation, function(code, stdout, stderr) {
         if(code === 0){
-            logger.info('takeSnapshot: success. saved to ' + snapshotLocation)
-            callback(null, '/snapshots/' + snapshotLocation);
+            logger.info('takeSnapshot: success. saved to ' + path.join(snapshotsDirectory, snapshotLabel));
+            callback(null, snapshotLocation);
         }
         else{
             logger.error('take snapshot: error. ' + stderr);
@@ -215,8 +216,8 @@ function setup(_dryMode) {
     logger.info('setup video entered. dryMode: ' + _dryMode);
 	dryMode = _dryMode;
 
-    if (!fs.existsSync(snapshotsDirectory)){
-        fs.mkdirSync(snapshotsDirectory);
+    if (!fs.existsSync(snapshotsFullPath)){
+        fs.mkdirSync(snapshotsFullPath);
     }
 	// turn on upon startup
     turnOn(() =>{
