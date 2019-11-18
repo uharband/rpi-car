@@ -199,12 +199,12 @@ function restart(cb) {
 }
 
 function takeSnapshot(callback){
-    let snapshotLabel = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-') + '.jpg';
+    let snapshotLabel = new Date().toISOString().replaceAll(':', '-') + '.jpg';
     let snapshotLocation = path.join(snapshotsFullPath, snapshotLabel);
     shell.exec('ffmpeg -f MJPEG -y -i http://localhost:' + port + '/?action=snapshot -r 1 -vframes 1 -q:v 1 ' + snapshotLocation, function(code, stdout, stderr) {
         if(code === 0){
             logger.info('takeSnapshot: success. saved to ' + path.join(snapshotsDirectory, snapshotLabel));
-            callback(null, snapshotLocation);
+            callback(null, path.join(snapshotsDirectory, snapshotLabel));
         }
         else{
             logger.error('take snapshot: error. ' + stderr);
