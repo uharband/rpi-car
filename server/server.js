@@ -38,8 +38,8 @@ if(config.modules.car) {
     car.setup(dryMode);
 }
 
-// html static service
-app.use(express.static(__dirname + '/html'));
+// app static service
+app.use(express.static(__dirname + '/app'));
 
 // static serving of snapshots
 app.use(express.static(__dirname + '/snapshots'));
@@ -86,8 +86,8 @@ app.get('/video/off', function (req, res) {
     }
 });
 
-app.post('/video/takesnapshot', function (req, res) {
-    logger.info('/video/takesnapshot entered');
+app.post('/video/snapshots', function (req, res) {
+    logger.info('/video/snapshots entered');
 
     if(!config.modules.video){
         return handleModuleNotConfigured('video', res);
