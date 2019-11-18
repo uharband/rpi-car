@@ -28,6 +28,7 @@ let child_process = require('child_process');
 let format = require('dateformat');
 
 let userConfigFile = path.join(__dirname, '..', 'config', 'user.json');
+let snapshotsDirectory = path.join(__dirname, '..', 'snapshots');
 let mjpg_streamer_process = null;
 let playing = false;
 let dryMode = false;
@@ -40,6 +41,7 @@ let fps;
 let timestamp;
 let port;
 let inputCommand;
+let videoOperationTimeout = 5000;
 
 const InputType = {
     raspberry_camera: 'input_raspicam.so',
@@ -51,77 +53,62 @@ let inputType = InputType.unknown;
 function turnOn(callback){
 	logger.info('video turnOn entered');
 
+	playing = true;
+
     resolveConfiguration();
 
     let command = generateCommand();
 
 	if(dryMode){
-	    playing = true;
 	    return callback(null);
     }
 
+    logger.info('before turning on, checking if already running')
+    // check if already running
 	isRunning((err, running) => {
 	    // error while checking if running
 	    if(err){
+	        logger.error('error while checking if already running: ' + err.toString());
 	        return callback(err);
         }
 
 	    //already running, nothing to do
 	    if(running){
+	        logger.info('already running, nothing to do');
 	        callback(null);
         }
         else{
-            turnOnInternal(command, (err)=>{
+	        // run the streamer
+            mjpg_streamer_process = child_process.exec(command, {
+                env: {
+                    LD_LIBRARY_PATH: config.video.root
+                },
+                detached: true
+            });
+
+            let now = Date.now();
+            let until = (new Date(now + videoOperationTimeout)).getTime();
+
+            waitForVideo(true, until, (err) => {
+                if(!err){
+                    mjpg_streamer_process.on('close', function(code, signal) {
+                        logger.info('child process exited with code ' + code + ', with signal ' + signal + ', is video playing? ' + playing);
+                        if(playing){
+                            logger.warn('mjpg_streamer exited unexpectedly while streaming. recovering...');
+                            setTimeout(function(){turnOn(function (){});} , 5000);
+                        }
+                    });
+                }
                 callback(err);
             });
-        }
-    });
-}
 
-function turnOnInternal(command, callback){
-    logger.info('turnOnInternal entered');
+            mjpg_streamer_process.stdout.on('data', function(data) {
+                logger.info('data from stdout: ' + data);
+            });
 
-    playing = true;
-
-    if(dryMode){
-        return callback(null);
-    }
-
-    mjpg_streamer_process = child_process.exec(command, {
-        env: {
-            LD_LIBRARY_PATH: config.video.root
-        },
-        detached: true
-    });
-
-    setTimeout(function () {
-        logger.info('after launching video. pid: ' + mjpg_streamer_process.pid);
-        isRunning((err, running) =>{
-            if(err){
-                return callback(err);
-            }
-            else if(running === false){
-                callback(new Error('still NOT running after launching mjpg_streamer...'));
-            }
-            else{
-                callback(null);
-            }
-        });
-    }, 2000);
-
-    mjpg_streamer_process.stdout.on('data', function(data) {
-        logger.info('data from stdout: ' + data);
-    });
-
-    mjpg_streamer_process.stderr.on('data', function(data) {
-        logger.info('data from stderr: ' + data);
-    });
-
-    mjpg_streamer_process.on('close', function(code, signal) {
-        logger.info('child process exited with code ' + code + ', with signal ' + signal + ', is video playing? ' + playing);
-        if(playing){
-            logger.warn('mjpg_streamer exited unexpectedly while streaming. recovering...');
-            setTimeout(function(){turnOn(function (){});} , 2000);
+            mjpg_streamer_process.stderr.on('data', function(data) {
+                logger.info('data from stderr: ' + data);
+            });
         }
     });
 }
@@ -143,6 +130,26 @@ function isRunning(callback){
     });
 }
 
+// wait for video to start / stop
+function waitForVideo(running, until, callback){
+    setTimeout(() =>{
+        isRunning((err, isRunning) => {
+            let now = Date.now();
+            logger.info('now: ' + now  + ', until: ' + until);
+            if(running === isRunning){
+                callback();
+            }
+            else if(Date.now > until){
+                logger.info('timed out!!');
+                callback(new Error('timeout'));
+            }
+            else{
+                waitForVideo(running, until, callback);
+            }
+        });
+    }, 500);
+}
+
 function turnOff(callback){
 	logger.info('turnOff entered');
 
@@ -157,32 +164,24 @@ function turnOff(callback){
     if(mjpg_streamer_process !== null){
         try{
             mjpg_streamer_process.kill('SIGKILL');
+            logger.info('after killing the child process')
         }
         catch (err) {
             logger.error('error while attempting to send SIGKILL to mjpg_streamer_process');
         }
     }
 
-
-    logger.info('sending SIGINT to mjpg_streamer');
+    logger.info('killing mjpg_streamer');
     shell.exec('killall -9 mjpg_streamer', function(code, stdout, stderr) {
-        logger.info('after executing killall -SIGINT mjpg_streamer ---');
-        logger.info('mjpg_streamer stop: Exit code:', code);
+        logger.info('after sending killall -9 mjpg_streamer. code: ' + code + ', stdout: ' + stdout + 'stderr: ' + stderr);
         logger.info('mjpg_streamer stop: complete. sleeping for 1 sec');
-        setTimeout(function(){
-            logger.info('mjpg_streamer stop: after sleeping');
-            isRunning((err, running) => {
-                if(err){
-                    return callback(err);
-                }
-                if(running){
-                   callback(new Error('still running after trying to kill mjpg_streamer...'));
-                }
-                else{
-                    callback(null);
-                }
-            });
-        }, 1000);
+
+        let now = Date.now();
+        let until = new Date(now + videoOperationTimeout);
+
+        waitForVideo(false, until, (err) => {
+            callback(err);
+        });
     });
 }
 
@@ -200,7 +199,7 @@ function restart(cb) {
 
 function takeSnapshot(callback){
     let snapshotLabel = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-') + '.jpg';
-    let snapshotLocation = path.join(__dirname, 'snapshots', snapshotLabel);
+    let snapshotLocation = path.join(snapshotsDirectory, snapshotLabel);
     shell.exec('ffmpeg -f MJPEG -y -i http://localhost:8080/?action=snapshot -r 1 -vframes 1 -q:v 1 ' + snapshotLocation, function(code, stdout, stderr) {
         if(code === 0){
             logger.info('takeSnapshot: success. saved to ' + snapshotLocation)
@@ -216,8 +215,13 @@ function setup(_dryMode) {
     logger.info('setup video entered. dryMode: ' + _dryMode);
 	dryMode = _dryMode;
 
+    if (!fs.existsSync(snapshotsDirectory)){
+        fs.mkdirSync(snapshotsDirectory);
+    }
 	// turn on upon startup
-    turnOn(function () {})
+    turnOn(() =>{
+        logger.info('finished turning on video')
+    })
 }
 
 function configure(width, height, verticalFlip, jpgQuality, fps, callback){

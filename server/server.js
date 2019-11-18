@@ -7,6 +7,7 @@ let logger = require('./lib/log');
 let config = require('config');
 
 let dryMode = false;
+let exiting = false;
 
 // get command line args
 if(process.argv.length > 2 && process.argv[2].toLowerCase() === 'drymode'){
@@ -408,21 +409,16 @@ function shutdwon(callback){
         });
     }
 }
-function exitHandler(options, err) {
-    console.log("exiting");
-    shutdwon(() =>{
-        if (options.cleanup) console.log('clean');
-        if (err) console.log('error: ' + err.stack);
-        if (options.exit) process.exit();
-    });
 
-}
 
 //do something when app is closing
-process.on('exit', exitHandler.bind(null, {cleanup: true}));
-
-//catches ctrl+c event
-process.on('SIGINT', exitHandler.bind(null, {exit: true}));
+process.on('exit', () =>{
+    shutdwon(() => {
+        logger.info('exiting');
+    });
+});
 
 //catches uncaught exceptions
-process.on('uncaughtException', exitHandler.bind(null, {exit: true}));
+process.on('uncaughtException', () =>{
+    logger.error('got an unhandeled exception')
+});
