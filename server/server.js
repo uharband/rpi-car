@@ -10,7 +10,7 @@ let dryMode = false;
 let exiting = false;
 
 // get command line args
-if(process.argv.length > 2 && process.argv[2].toLowerCase() === 'drymode'){
+if (process.argv.length > 2 && process.argv[2].toLowerCase() === 'drymode') {
     dryMode = true;
 }
 logger.info('dryMode = ' + dryMode);
@@ -23,17 +23,17 @@ let car;
 let audio;
 let video;
 
-if(config.modules.video) {
+if (config.modules.video) {
     video = require('./lib/video/videocontroller');
     video.setup(dryMode);
 }
 
-if(config.modules.audio) {
+if (config.modules.audio) {
     audio = require('./lib/audio/audiocontroller');
     audio.setup(dryMode);
 }
 
-if(config.modules.car) {
+if (config.modules.car) {
     car = require('./lib/car/carcontroller');
     car.setup(dryMode);
 }
@@ -53,10 +53,10 @@ app.use(express.static(__dirname + '/snapshots'));
 app.get('/video/on', function (req, res) {
     logger.info('/video/on entered');
 
-    if(!config.modules.video){
+    if (!config.modules.video) {
         return handleModuleNotConfigured('video', res);
     }
-    else{
+    else {
         video.turnOn(function (error) {
             if (error === "") {
                 res.send("started video");
@@ -71,7 +71,7 @@ app.get('/video/on', function (req, res) {
 app.get('/video/off', function (req, res) {
     logger.info('/video/off entered');
 
-    if(!config.modules.video){
+    if (!config.modules.video) {
         return handleModuleNotConfigured('video', res);
     }
     else {
@@ -89,7 +89,7 @@ app.get('/video/off', function (req, res) {
 app.post('/video/snapshots', function (req, res) {
     logger.info('/video/snapshots entered');
 
-    if(!config.modules.video){
+    if (!config.modules.video) {
         return handleModuleNotConfigured('video', res);
     }
     else {
@@ -108,7 +108,7 @@ app.post('/video/snapshots', function (req, res) {
 app.get('/video/configure', function (req, res) {
     logger.info('/video/configure entered');
 
-    if(!config.modules.video){
+    if (!config.modules.video) {
         return handleModuleNotConfigured('video', res);
     }
     else {
@@ -149,7 +149,7 @@ app.get('/video/configure', function (req, res) {
 app.get('/audio/on', function (req, res) {
     logger.info('/audio/on entered');
 
-    if(!config.modules.audio){
+    if (!config.modules.audio) {
         return handleModuleNotConfigured('audio', res);
     }
     else {
@@ -168,7 +168,7 @@ app.get('/audio/on', function (req, res) {
 app.get('/audio/off', function (req, res) {
     logger.info('/audio/off entered');
 
-    if(!config.modules.audio){
+    if (!config.modules.audio) {
         return handleModuleNotConfigured('audio', res);
     }
     else {
@@ -193,7 +193,7 @@ app.get('/audio/off', function (req, res) {
 app.get('/forward', function (req, res) {
     logger.info('entered /forward');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -207,7 +207,7 @@ app.get('/forward', function (req, res) {
 app.get('/increaseForwardSpeed', function (req, res) {
     logger.info('entered /increaseForwardSpeed');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -219,7 +219,7 @@ app.get('/increaseForwardSpeed', function (req, res) {
 app.get('/increaseBackwardSpeed', function (req, res) {
     logger.info('entered /increaseBackwardSpeed');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -229,11 +229,10 @@ app.get('/increaseBackwardSpeed', function (req, res) {
 });
 
 
-
 app.get('/backward', function (req, res) {
     logger.info('entered /backward');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -245,7 +244,7 @@ app.get('/backward', function (req, res) {
 app.get('/increaseBackwardsSpeed', function (req, res) {
     logger.info('entered /increaseBackwardsSpeed');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -257,7 +256,7 @@ app.get('/increaseBackwardsSpeed', function (req, res) {
 app.get('/decreaseBackwardsSpeed', function (req, res) {
     logger.info('entered /decreaseBackwardsSpeed');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -270,7 +269,7 @@ app.get('/decreaseBackwardsSpeed', function (req, res) {
 app.get('/moderateRight', function (req, res) {
     logger.info('entered /moderateRight');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -282,7 +281,7 @@ app.get('/moderateRight', function (req, res) {
 app.get('/moderateLeft', function (req, res) {
     logger.info('entered /moderateLeft');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -294,7 +293,7 @@ app.get('/moderateLeft', function (req, res) {
 app.get('/sharpRight', function (req, res) {
     logger.info('entered /sharpRight');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -306,7 +305,7 @@ app.get('/sharpRight', function (req, res) {
 app.get('/sharpLeft', function (req, res) {
     logger.info('entered /sharpLeft');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -318,7 +317,7 @@ app.get('/sharpLeft', function (req, res) {
 app.get('/stopTurning', function (req, res) {
     logger.info('entered /stopTurning');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -330,7 +329,7 @@ app.get('/stopTurning', function (req, res) {
 app.get('/stop', function (req, res) {
     logger.info('entered /stop');
 
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -345,7 +344,7 @@ app.get('/state', function (req, res) {
     let speed = req.query.speed;
     let eventId = req.query.eventId;
     logger.info('direction=' + direction + ', speed=' + speed + ', eventId=' + eventId);
-    if(!config.modules.car){
+    if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     }
     else {
@@ -370,22 +369,22 @@ let server = app.listen(8080, function () {
 
 process.stdin.resume();//so the program will not close instantly
 
-function shutdwon(callback){
+function shutdwon(callback) {
     let componentsRequiringShutdown = 0;
-    if(config.modules.car){
+    if (config.modules.car) {
         componentsRequiringShutdown++;
     }
-    if(config.modules.audio){
+    if (config.modules.audio) {
         componentsRequiringShutdown++;
     }
-    if(config.modules.video){
+    if (config.modules.video) {
         componentsRequiringShutdown++;
     }
 
     if (config.modules.car) {
-        car.teardown(()=>{
+        car.teardown(() => {
             componentsRequiringShutdown--;
-            if(componentsRequiringShutdown === 0){
+            if (componentsRequiringShutdown === 0) {
                 callback();
             }
         });
@@ -394,7 +393,7 @@ function shutdwon(callback){
     if (config.modules.audio) {
         audio.turnOff(() => {
             componentsRequiringShutdown--;
-            if(componentsRequiringShutdown === 0){
+            if (componentsRequiringShutdown === 0) {
                 callback();
             }
         });
@@ -403,27 +402,32 @@ function shutdwon(callback){
     if (config.modules.video) {
         video.turnOff(() => {
             componentsRequiringShutdown--;
-            if(componentsRequiringShutdown === 0){
+            if (componentsRequiringShutdown === 0) {
                 callback();
             }
         });
     }
 }
 
-process.on('SIGINT', () =>{
-    shutdwon(() => {
-        logger.info('exiting');
-    });
-});
+function exitHandler(options, err) {
+    console.log("exiting");
+    shutdwon(() =>{
+        if (options.cleanup) console.log('clean');
+        if (err) console.log('error: ' + err.stack);
+        if (options.exit){
+            shutdwon(()=>{
+                process.exit();
+            });
 
-//do something when app is closing
-process.on('exit', () =>{
-    shutdwon(() => {
-        logger.info('exiting');
+        }
     });
-});
+}
 
-//catches uncaught exceptions
-process.on('uncaughtException', () =>{
-    logger.error('got an unhandeled exception')
-});
+
+//do something when app is closing	//do something when app is closing
+process.on('exit', exitHandler.bind(null, {cleanup: true}));
+
+//catches ctrl+c event
+process.on('SIGINT', exitHandler.bind(null, {exit: true}));
+
+process.on('uncaughtException', exitHandler.bind(null, {exit: true}));
