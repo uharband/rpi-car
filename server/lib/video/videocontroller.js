@@ -246,10 +246,23 @@ function setup(_dryMode) {
     if (!fs.existsSync(snapshotsFullPath)){
         fs.mkdirSync(snapshotsFullPath);
     }
-	// turn on upon startup
-    turnOn(() =>{
-        logger.info('finished turning on video')
-    })
+
+    isRunning((err, running) => {
+        if(err){
+
+        }
+        if(running){
+            restart((err) => {
+
+            })
+        }
+        else{
+            turnOn((err) => {
+
+            });
+        }
+    });
+
 }
 
 function shutdown(callback){
