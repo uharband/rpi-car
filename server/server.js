@@ -105,6 +105,24 @@ app.post('/video/snapshots', function (req, res) {
     }
 });
 
+app.delete('/video/snapshots/:snapshot', function (req, res) {
+    logger.info('DELETE /video/snapshots/snapshot entered');
+    let snapshotName = req.params.snapshot;
+    if (!config.modules.video) {
+        return handleModuleNotConfigured('video', res);
+    }
+    else {
+        video.deleteSnapshot(snapshotName, function (err) {
+            if (err) {
+                res.send("error deleting snapshot " + snapshotName + ": " + err.toString());
+            }
+            else {
+                res.send('snapshot ' + snapshotName + ' deleted successfully');
+            }
+        });
+    }
+});
+
 app.get('/video/configure', function (req, res) {
     logger.info('/video/configure entered');
 
@@ -365,6 +383,7 @@ let server = app.listen(8080, function () {
     let host = server.address().address;
     let port = server.address().port;
     logger.info("raspberry car listening at http://%s:%s", host, port)
+    throw new Error('my err');
 });
 
 process.stdin.resume();//so the program will not close instantly
@@ -382,7 +401,7 @@ function shutdwon(callback) {
     }
 
     if (config.modules.car) {
-        car.teardown(() => {
+        car.shutdown(() => {
             componentsRequiringShutdown--;
             if (componentsRequiringShutdown === 0) {
                 callback();
@@ -410,7 +429,6 @@ function shutdwon(callback) {
 }
 
 function exitHandler(options, err) {
-    console.log("exiting");
     shutdwon(() =>{
         if (options.cleanup) console.log('clean');
         if (err) console.log('error: ' + err.stack);
@@ -430,4 +448,10 @@ process.on('exit', exitHandler.bind(null, {cleanup: true}));
 //catches ctrl+c event
 process.on('SIGINT', exitHandler.bind(null, {exit: true}));
 
-process.on('uncaughtException', exitHandler.bind(null, {exit: true}));
+process.on('uncaughtException', (err) =>{
+    let message = 'got an unhandled exception. exiting the process';
+    if(err){
+        message += ': ' + err.message + ', stack: ' + err.stack;
+    }
+    logger.error(message);
+});

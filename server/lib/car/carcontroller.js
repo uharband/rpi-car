@@ -43,6 +43,8 @@ let currentCommand = 0;
 let requestedState = {};
 let executingState = {};
 
+let shuttingDown = false;
+
 setInterval(function () {
     work();
 }, 10);
@@ -73,10 +75,15 @@ function setup(_dryMode) {
     });
 }
 
-function teardown(callback) {
+function shutdown(callback) {
     if(dryMode){
         return callback();
     }
+    if(shuttingDown){
+        return callback();
+    }
+    shuttingDown = true;
+
     if(right_forward !== null && right_forward !== undefined){
         right_forward.destroy();
     }
@@ -89,6 +96,7 @@ function teardown(callback) {
     if(left_backwards !== null && left_backwards !== undefined){
         left_backwards.destroy();
     }
+    logger.info('car shutdown complete');
     return callback();
 }
 
@@ -354,7 +362,7 @@ function stopTurning() {
 
 
 module.exports.setup = setup;
-module.exports.teardown = teardown;
+module.exports.shutdown = shutdown;
 module.exports.forward = forward;
 module.exports.backwards = backwards;
 module.exports.stop = stop;

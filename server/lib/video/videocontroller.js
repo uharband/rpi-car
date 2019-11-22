@@ -43,6 +43,7 @@ let timestamp;
 let port;
 let inputCommand;
 let videoOperationTimeout = 5000;
+let shuttingDown = false;
 
 const InputType = {
     raspberry_camera: 'input_raspicam.so',
@@ -56,8 +57,11 @@ function turnOn(callback){
 
 	playing = true;
 
+	// user can change config params while running
+    // we need to determine up-to-date config before launching video process
     resolveConfiguration();
 
+    // build the launch video command based on the retrieved configuration
     let command = generateCommand();
 
 	if(dryMode){
@@ -87,29 +91,34 @@ function turnOn(callback){
                 detached: true
             });
 
-            let now = Date.now();
-            let until = (new Date(now + videoOperationTimeout)).getTime();
+            let now = new Date();
+            let until = new Date(now.getTime() + videoOperationTimeout);
 
-            waitForVideo(true, until, (err) => {
-                if(!err){
-                    mjpg_streamer_process.on('close', function(code, signal) {
-                        logger.info('child process exited with code ' + code + ', with signal ' + signal + ', is video playing? ' + playing);
-                        if(playing){
-                            logger.warn('mjpg_streamer exited unexpectedly while streaming. recovering...');
-                            setTimeout(function(){turnOn(function (){});} , 5000);
-                        }
-                    });
-                }
-                callback(err);
-            });
+            // wait 2 secs to allow the video process start, then start polling for the process existence
+            setTimeout(() => {
+                // start polling for video process
+                waitForVideo(true, until, (err) => {
+                    if(!err){
+                        // after video was successfully started register for unexpected close events on the video process
+                        mjpg_streamer_process.on('close', function(code, signal) {
+                            logger.info('child process exited with code ' + code + ', with signal ' + signal + ', is video playing? ' + playing);
+                            if(playing){
+                                logger.warn('mjpg_streamer exited unexpectedly while streaming. recovering...');
+                                setTimeout(function(){turnOn(function (){});} , 5000);
+                            }
+                        });
+                    }
+                    callback(err);
+                });
 
-            mjpg_streamer_process.stdout.on('data', function(data) {
-                logger.info('data from stdout: ' + data);
-            });
+                mjpg_streamer_process.stdout.on('data', function(data) {
+                    logger.info('data from stdout: ' + data);
+                });
 
-            mjpg_streamer_process.stderr.on('data', function(data) {
-                logger.info('data from stderr: ' + data);
-            });
+                mjpg_streamer_process.stderr.on('data', function(data) {
+                    logger.info('data from stderr: ' + data);
+                });
+            }, 2000);
         }
     });
 }
@@ -135,16 +144,19 @@ function isRunning(callback){
 function waitForVideo(running, until, callback){
     setTimeout(() =>{
         isRunning((err, isRunning) => {
-            let now = Date.now();
+            let now = new Date();
             logger.info('now: ' + now  + ', until: ' + until);
+            logger.info('running = ' + running + ', isRunning: ' + isRunning)
             if(running === isRunning){
+                logger.info('equal, calling cb');
                 callback();
             }
-            else if(Date.now > until){
-                logger.info('timed out!!');
+            else if(now.getTime() > until.getTime()){
+                logger.info('timed out waiting for video start');
                 callback(new Error('timeout'));
             }
             else{
+                logger.info('didnt timeout');
                 waitForVideo(running, until, callback);
             }
         });
@@ -212,6 +224,21 @@ function takeSnapshot(callback){
     });
 }
 
+function deleteSnapshot(snapshotName, callback){
+    fs.unlink(path.join(snapshotsFullPath, snapshotName), (err) => {
+        if(err && err.code === 'ENOENT') {
+            // file doens't exist
+            logger.info("File doesn't exist, won't remove it.");
+        } else if (err) {
+            // other errors, e.g. maybe we don't have enough permission
+            logger.error("error while trying to remove snapshot " + snapshotName);
+            callback(err);
+        } else {
+            console.info('removed snapshot ' + snapshotName);
+        }
+    });
+}
+
 function setup(_dryMode) {
     logger.info('setup video entered. dryMode: ' + _dryMode);
 	dryMode = _dryMode;
@@ -222,6 +249,20 @@ function setup(_dryMode) {
 	// turn on upon startup
     turnOn(() =>{
         logger.info('finished turning on video')
+    })
+}
+
+function shutdown(callback){
+    if(dryMode){
+        return callback();
+    }
+    if(shuttingDown){
+        return callback();
+    }
+    shuttingDown = true;
+    turnOff(() =>{
+        logger.info('video shutdown complete');
+        callback();
     })
 }
 
@@ -378,9 +419,10 @@ String.prototype.replaceAll = function(search, replacement) {
 
 
 
-
 module.exports.setup = setup;
+module.exports.shutdwon = shutdown;
 module.exports.turnOn = turnOn;
 module.exports.turnOff = turnOff;
 module.exports.configure = configure;
 module.exports.takeSnapshot = takeSnapshot;
+module.exports.deleteSnapshot = deleteSnapshot;
