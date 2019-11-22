@@ -382,8 +382,7 @@ function handleModuleNotConfigured(module, res) {
 let server = app.listen(8080, function () {
     let host = server.address().address;
     let port = server.address().port;
-    logger.info("raspberry car listening at http://%s:%s", host, port)
-    throw new Error('my err');
+    logger.info("raspberry car listening at http://%s:%s", host, port);
 });
 
 process.stdin.resume();//so the program will not close instantly
