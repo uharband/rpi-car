@@ -91,6 +91,14 @@ function turnOn(callback){
                 detached: true
             });
 
+            mjpg_streamer_process.stdout.on('data', function(data) {
+                logger.info('data from stdout: ' + data);
+            });
+
+            mjpg_streamer_process.stderr.on('data', function(data) {
+                logger.info('data from stderr: ' + data);
+            });
+
             let now = new Date();
             let until = new Date(now.getTime() + videoOperationTimeout);
 
@@ -109,14 +117,6 @@ function turnOn(callback){
                         });
                     }
                     callback(err);
-                });
-
-                mjpg_streamer_process.stdout.on('data', function(data) {
-                    logger.info('data from stdout: ' + data);
-                });
-
-                mjpg_streamer_process.stderr.on('data', function(data) {
-                    logger.info('data from stderr: ' + data);
                 });
             }, 2000);
         }
