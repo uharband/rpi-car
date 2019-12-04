@@ -44,6 +44,23 @@ app.use(express.static(__dirname + '/app'));
 // static serving of snapshots
 app.use(express.static(__dirname + '/snapshots'));
 
+
+/* -------------------------------------------------------
+
+                       SERVER
+
+ ------------------------------------------------------ */
+
+app.get('/shutdown', function (req, res) {
+    logger.info('/shutdown entered');
+
+    shutdwon(() => {
+        logger.info('after shutting down. exiting process');
+        process.exit(0);
+    });
+});
+
+
 /* -------------------------------------------------------
 
                        VIDEO
