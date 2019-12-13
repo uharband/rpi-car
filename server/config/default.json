@@ -2,12 +2,12 @@
     "modules": {
         "audio": false,
         "video": true,
-        "car": false
+        "car": true
     },
     "video":{
         "cameraType": "raspberry-camera",
         "root":"/home/pi/mjpg-streamer/mjpg-streamer-experimental",
-        "fps": 5,
+        "fps": 10,
         "width": 640,
         "height": 480,
         "jpgQuality": 85,
