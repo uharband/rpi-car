@@ -13,7 +13,8 @@
     "raspi-soft-pwm": "^5.0.0",
     "rpio": "^0.9.16",
     "shelljs": "^0.7.7",
-    "winston": "^2.3.1"
+    "winston": "^2.3.1",
+    "ps-node": "^0.1.6"
   },
   "devDependencies": {},
   "scripts": {
