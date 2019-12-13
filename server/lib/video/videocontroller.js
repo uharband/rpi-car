@@ -130,12 +130,12 @@ function isRunning(callback){
     }
     shell.exec('ps -ef|grep mjpg_streamer|wc -l', function(code, stdout, stderr) {
         if(stdout){
-            logger.info('after running ps -ef|grep mjpg_streamer|wc -l stdout is ' + stdout);
+            logger.info('after executing ps -ef|grep mjpg_streamer|wc -l stdout is ' + stdout.trim());
             let isRunning = parseInt(stdout)>2;
             logger.info('isRunning: ' + isRunning);
             return callback(null, isRunning);
         }
-        logger.error('stdout is empty. stderr is: ' + stderr);
+        logger.error('error while checking if running. stdout is empty. stderr is: ' + stderr);
         callback(new Error(stderr));
     });
 }
@@ -239,26 +239,32 @@ function deleteSnapshot(snapshotName, callback){
     });
 }
 
-function setup(_dryMode) {
+function setup(_dryMode, callback) {
     logger.info('setup video entered. dryMode: ' + _dryMode);
 	dryMode = _dryMode;
 
-    if (!fs.existsSync(snapshotsFullPath)){
-        fs.mkdirSync(snapshotsFullPath);
+	try {
+        if (!fs.existsSync(snapshotsFullPath)) {
+            fs.mkdirSync(snapshotsFullPath);
+        }
+    }
+    catch (exc) {
+        return callback(exc);
     }
 
+    // if video process was already running before startup, possibly due to bad previous shutdown
+    // restart the video process
     isRunning((err, running) => {
-        if(err){
-
-        }
-        if(running){
+        // ignore unexpected errors here
+        if(err || running){
             restart((err) => {
-
+                callback(err);
             })
         }
+        // not running, turn on normally
         else{
             turnOn((err) => {
-
+                callback(err);
             });
         }
     });

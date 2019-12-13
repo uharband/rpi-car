@@ -5,13 +5,13 @@ let dryMode = false;
 
 let shuttingDown = false;
 
-function setup(_dryMode) {
+function setup(_dryMode, callback) {
     logger.info('setup audio entered. dryMode: ' + _dryMode);
     dryMode = _dryMode;
 
     // turn on upon setup
-    turnOn(function () {
-
+    turnOn(function (err) {
+		callback(err);
     })
 }
 
@@ -28,12 +28,11 @@ function turnOn(callback){
 		logger.info('startAudioStreaming Program stderr:', stderr);
 		logger.info('startAudioStreaming: complete');
 		if(stderr !== ''){
-			return callback('error while starting audio! ' + stderr);
+			return callback(new Error('error while starting audio! ' + stderr));
 		}
 		else{
-			callback('');
+			callback();
 		}
-		
 	});
 }
 

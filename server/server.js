@@ -23,26 +23,25 @@ let car;
 let audio;
 let video;
 
-if (config.modules.video) {
-    video = require('./lib/video/videocontroller');
-    video.setup(dryMode);
-}
-
-if (config.modules.audio) {
-    audio = require('./lib/audio/audiocontroller');
-    audio.setup(dryMode);
-}
-
-if (config.modules.car) {
-    car = require('./lib/car/carcontroller');
-    car.setup(dryMode);
-}
 
 // app static service
 app.use(express.static(__dirname + '/app'));
 
 // static serving of snapshots
 app.use(express.static(__dirname + '/snapshots'));
+
+
+setup(() =>{
+    logger.info('setup complete')
+});
+
+let server = app.listen(8080, function () {
+    let host = server.address().address;
+    let port = server.address().port;
+    logger.info("raspberry car listening at http://%s:%s", host, port);
+});
+
+process.stdin.resume();//so the program will not close instantly
 
 
 /* -------------------------------------------------------
@@ -54,7 +53,7 @@ app.use(express.static(__dirname + '/snapshots'));
 app.get('/shutdown', function (req, res) {
     logger.info('/shutdown entered');
 
-    shutdwon(() => {
+    shutdown(() => {
         logger.info('after shutting down. exiting process');
         process.exit(0);
     });
@@ -396,25 +395,41 @@ function handleModuleNotConfigured(module, res) {
 }
 
 
-let server = app.listen(8080, function () {
-    let host = server.address().address;
-    let port = server.address().port;
-    logger.info("raspberry car listening at http://%s:%s", host, port);
-});
-
-process.stdin.resume();//so the program will not close instantly
-
-function shutdwon(callback) {
-    let componentsRequiringShutdown = 0;
-    if (config.modules.car) {
-        componentsRequiringShutdown++;
-    }
-    if (config.modules.audio) {
-        componentsRequiringShutdown++;
-    }
+function setup(callback) {
+    let componentsRequiringSetup = getNumberOfActiveComponents();
     if (config.modules.video) {
-        componentsRequiringShutdown++;
+        video = require('./lib/video/videocontroller');
+        video.setup(dryMode, () => {
+            componentsRequiringSetup--;
+            if (componentsRequiringSetup === 0) {
+                callback();
+            }
+        });
     }
+
+    if (config.modules.audio) {
+        audio = require('./lib/audio/audiocontroller');
+        audio.setup(dryMode, () => {
+            componentsRequiringSetup--;
+            if (componentsRequiringSetup === 0) {
+                callback();
+            }
+        });
+    }
+
+    if (config.modules.car) {
+        car = require('./lib/car/carcontroller');
+        car.setup(dryMode, () => {
+            componentsRequiringSetup--;
+            if (componentsRequiringSetup === 0) {
+                callback();
+            }
+        });
+    }
+}
+
+function shutdown(callback) {
+    let componentsRequiringShutdown = getNumberOfActiveComponents();
 
     if (config.modules.car) {
         car.shutdown(() => {
@@ -444,12 +459,26 @@ function shutdwon(callback) {
     }
 }
 
+function getNumberOfActiveComponents(){
+    let numberOfComponents = 0;
+    if (config.modules.car) {
+        numberOfComponents++;
+    }
+    if (config.modules.audio) {
+        numberOfComponents++;
+    }
+    if (config.modules.video) {
+        numberOfComponents++;
+    }
+    return numberOfComponents;
+}
+
 function exitHandler(options, err) {
-    shutdwon(() =>{
+    shutdown(() =>{
         if (options.cleanup) console.log('clean');
         if (err) console.log('error: ' + err.stack);
         if (options.exit){
-            shutdwon(()=>{
+            shutdown(()=>{
                 process.exit();
             });
 

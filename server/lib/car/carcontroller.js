@@ -50,7 +50,7 @@ setInterval(function () {
 }, 10);
 
 // setup: open all pins and set them to LOW which is OFF
-function setup(_dryMode) {
+function setup(_dryMode, callback) {
     logger.info('setup car entered. dryMode: ' + _dryMode);
     if(_dryMode !== null){
         dryMode = _dryMode;
@@ -59,7 +59,7 @@ function setup(_dryMode) {
     currentSpeed = 0;
 
     if(dryMode){
-        return;
+        return callback();
     }
 
     raspi = require('raspi');
@@ -72,6 +72,7 @@ function setup(_dryMode) {
         left_backwards = new pwm.SoftPWM(left_backward_pin);
 
         stop();
+        callback();
     });
 }
 
