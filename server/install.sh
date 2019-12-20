@@ -11,11 +11,6 @@ echo "  ----------------------------------------------------------- "
 
 echo " working directory is " `pwd`
 
-sudo apt-get update
-
-echo "  --------  installing npm  --------------- "
-sudo apt-get install npm -y
-
 echo "  --------  installing npm packages  --------------- "
 npm install
 
