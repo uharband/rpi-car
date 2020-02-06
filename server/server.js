@@ -22,6 +22,9 @@ logger.info(config.modules);
 let car;
 let audio;
 let video;
+let videoHealth;
+
+let startupTime;
 
 
 // app static service
@@ -36,6 +39,7 @@ setup(() =>{
 });
 
 let server = app.listen(8080, function () {
+    startupTime = new Date();
     let host = server.address().address;
     let port = server.address().port;
     logger.info("raspberry car listening at http://%s:%s", host, port);
@@ -49,6 +53,13 @@ process.stdin.resume();//so the program will not close instantly
                        SERVER
 
  ------------------------------------------------------ */
+
+app.get('/status', (req, res) => {
+    response = {};
+    response.startupTime = startupTime.toString();
+    response.modules = config.modules;
+    res.send(response);
+});
 
 app.get('/shutdown', function (req, res) {
     logger.info('/shutdown entered');
@@ -173,6 +184,46 @@ app.get('/video/configure', function (req, res) {
         });
     }
 });
+
+
+app.get('/video/state', function (req, res) {
+    logger.info('/video/state entered');
+
+    if (!config.modules.video) {
+        return handleModuleNotConfigured('video', res);
+    }
+
+    videoHealth.isConnected((err, result) => {
+        if(err){
+            res.status = 500;
+            res.send({error: err.message});
+        }
+        else{
+            res.send(result);
+        }
+    });
+});
+
+app.get('/video/testsnapshot', function (req, res) {
+    logger.info('/video/testsnapshot entered');
+
+    if (!config.modules.video) {
+        return handleModuleNotConfigured('video', res);
+    }
+    else {
+        videoHealth.takeTestSnapshot(function (err, snapshot) {
+            if(err){
+                res.status = 500;
+                res.send({error: err.message});
+            }
+            else{
+                res.set('Location', snapshot);
+                res.send("snapshot taken successfully: " + snapshot);
+            }
+        });
+    }
+});
+
 
 
 /* -------------------------------------------------------
@@ -399,6 +450,7 @@ function setup(callback) {
     let componentsRequiringSetup = getNumberOfActiveComponents();
     if (config.modules.video) {
         video = require('./lib/video/videocontroller');
+        videoHealth = require('./lib/video/health');
         video.setup(dryMode, () => {
             componentsRequiringSetup--;
             if (componentsRequiringSetup === 0) {
