@@ -264,16 +264,23 @@ app.get('/audio/state', function (req, res) {
 app.get('/audio/taketestrecording', function (req, res) {
     logger.info('/audio/taketestrecording entered');
 
-    audioHealth.takeTestRecording(function (err, snapshot) {
+    audioHealth.isConnected((err, res) => {
         if (err) {
             res.status = 500;
             res.send({error: err.message});
         } else {
-            res.set('Location', snapshot);
-            res.send("recording taken successfully: " + snapshot);
+            audioHealth.takeTestRecording(res.card, res.device,function (err, snapshot) {
+                if (err) {
+                    res.status = 500;
+                    res.send({error: err.message});
+                } else {
+                    res.set('Location', snapshot);
+                    res.send("recording taken successfully: " + snapshot);
+                }
+            });
         }
-    });
 
+    });
 });
 
 
