@@ -21,7 +21,7 @@ function isConnected(cb) {
         let card = parseInt(cardSplit.split(' ')[1]);
         let device = parseInt(deviceSplit.split(' ')[1]);
 
-        return {card: card, device: device};
+        cb(null, {card: card, device: device});
     });
 }
 
@@ -32,7 +32,7 @@ function takeTestRecording(card, device, cb) {
             cb(new Error('error taking test audio recording. internal error: ' + err.message));
         }
 
-        return (parseInt(res.stdout) >= 1);
+        cb(null, (parseInt(res.stdout) >= 1));
     });
 
 }

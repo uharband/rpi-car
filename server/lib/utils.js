@@ -1,4 +1,5 @@
 let shell = require('shelljs');
+let logger = require('./log');
 
 function execute(command, cb) {
     shell.exec(command, (code, stdout, stderr) => {
