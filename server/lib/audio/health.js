@@ -4,8 +4,8 @@ let config = require('config');
 let path = require('path');
 let utils = require('../utils');
 
-let snapshotsDirectory = 'snapshots';
-let snapshotsFullPath = path.join(__dirname, '..', '..', 'app', snapshotsDirectory);
+let recordingsDirectory = 'recordings';
+let recordingsFullPath = path.join(__dirname, '..', '..', 'app', recordingsDirectory);
 
 
 function isConnected(cb) {
@@ -33,12 +33,16 @@ function isConnected(cb) {
 
 function takeTestRecording(card, device, cb) {
     logger.info('takeTestRecording entered');
-    utils.execute('arecord -D hw:' + card + ',' + device + ' -d 5 -f cd testrecording.wav -c 1', function (err, res) {
+
+    let recordingLabel = 'testrecording.wav';
+    let recordingLocation = path.join(recordingsFullPath, recordingLabel);
+
+    utils.execute('arecord -D hw:' + card + ',' + device + ' -d 5 -f cd ' + recordingLocation + ' -c 1', function (err, res) {
         if (err) {
             cb(new Error('error taking test audio recording. internal error: ' + err.message));
         }
 
-        cb(null, (parseInt(res.stdout) >= 1));
+        return cb(null, path.join(recordingsDirectory, recordingLabel));
     });
 
 }

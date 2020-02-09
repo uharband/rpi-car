@@ -36,6 +36,9 @@ app.use(express.static(__dirname + '/app'));
 // static serving of snapshots
 app.use(express.static(__dirname + '/snapshots'));
 
+// static serving of recordings
+app.use(express.static(__dirname + '/recordings'));
+
 
 // don't automatically setup server
 /*
