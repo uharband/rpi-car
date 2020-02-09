@@ -16,13 +16,13 @@ function isConnected(cb) {
         }
 
         try{
-            let cardSegmentStartIdx = res.indexOf('card ') + 5;
-            let cardSegmentEndIdx = res.indexOf(':', cardSegmentStartIdx);
-            let card = parseInt(res.substring(cardSegmentStartIdx, cardSegmentEndIdx));
+            let cardSegmentStartIdx = res.stdout.indexOf('card ') + 5;
+            let cardSegmentEndIdx = res.stdout.indexOf(':', cardSegmentStartIdx);
+            let card = parseInt(res.stdout.substring(cardSegmentStartIdx, cardSegmentEndIdx));
 
-            let deviceSegmentStartIdx = res.indexOf('device ') + 7;
-            let deviceSegmentEndIdx = res.indexOf(':', deviceSegmentStartIdx);
-            let device = parseInt(res.substring(deviceSegmentStartIdx, deviceSegmentEndIdx));
+            let deviceSegmentStartIdx = res.stdout.indexOf('device ') + 7;
+            let deviceSegmentEndIdx = res.stdout.indexOf(':', deviceSegmentStartIdx);
+            let device = parseInt(res.stdout.substring(deviceSegmentStartIdx, deviceSegmentEndIdx));
             return cb(null, {card: card, device: device});
         }
         catch (e) {
