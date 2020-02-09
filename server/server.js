@@ -548,4 +548,5 @@ process.on('uncaughtException', (err) => {
         message += ': ' + err.message + ', stack: ' + err.stack;
     }
     logger.error(message);
+    exitHandler(null, {exit: true});
 });
