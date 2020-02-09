@@ -54,8 +54,8 @@ function takeTestRecording(cb) {
 }
 
 function setup(){
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir);
+    if (!fs.existsSync(recordingsFullPath)){
+        fs.mkdirSync(recordingsFullPath);
     }
 }
 
