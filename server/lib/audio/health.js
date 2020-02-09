@@ -12,16 +12,22 @@ function isConnected(cb) {
     logger.info('isConnected entered');
     utils.execute('arecord -l | grep -i "sound device"', function (err, res) {
         if (err) {
-            cb(new Error('error checking if rpi-camera is connected. internal error: ' + err.message));
+            return cb(new Error('error checking if rpi-camera is connected. internal error: ' + err.message));
         }
 
-        let resultSplit = res.stdout.split(':');
-        let cardSplit = resultSplit[0];
-        let deviceSplit = resultSplit[1];
-        let card = parseInt(cardSplit.split(' ')[1]);
-        let device = parseInt(deviceSplit.split(' ')[1]);
+        try{
+            let cardSegmentStartIdx = res.indexOf('card ') + 5;
+            let cardSegmentEndIdx = res.indexOf(':', cardSegmentStartIdx);
+            let card = parseInt(res.substring(cardSegmentStartIdx, cardSegmentEndIdx));
 
-        cb(null, {card: card, device: device});
+            let deviceSegmentStartIdx = res.indexOf('device ') + 7;
+            let deviceSegmentEndIdx = res.indexOf(':', deviceSegmentStartIdx);
+            let device = parseInt(res.substring(deviceSegmentStartIdx, deviceSegmentEndIdx));
+            return cb(null, {card: card, device: device});
+        }
+        catch (e) {
+            cb(new Error('error parsing arecord command response. internal error: ' + e.message));
+        }
     });
 }
 
