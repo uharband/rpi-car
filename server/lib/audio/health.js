@@ -3,6 +3,7 @@ let logger = require('../log');
 let config = require('config');
 let path = require('path');
 let utils = require('../utils');
+let fs = require('fs');
 
 let recordingsDirectory = 'recordings';
 let recordingsFullPath = path.join(__dirname, '..', '..', 'app', recordingsDirectory);
@@ -31,21 +32,34 @@ function isConnected(cb) {
     });
 }
 
-function takeTestRecording(card, device, cb) {
+function takeTestRecording(cb) {
     logger.info('takeTestRecording entered');
 
-    let recordingLabel = 'testrecording.wav';
-    let recordingLocation = path.join(recordingsFullPath, recordingLabel);
-
-    utils.execute('arecord -D hw:' + card + ',' + device + ' -d 5 -f cd ' + recordingLocation + ' -c 1', function (err, res) {
-        if (err) {
-            cb(new Error('error taking test audio recording. internal error: ' + err.message));
+    isConnected((err, result) =>{
+        if(err){
+            return cb(new Error('error attempting to take test recording. internal error is: ' + err.message));
         }
 
-        return cb(null, path.join(recordingsDirectory, recordingLabel));
-    });
+        let recordingLabel = 'testrecording.wav';
+        let recordingLocation = path.join(recordingsFullPath, recordingLabel);
 
+        utils.execute('arecord -D hw:' + result.card + ',' + result.device + ' -d 5 -f cd ' + recordingLocation + ' -c 1', function (err, res) {
+            if (err) {
+                return cb(new Error('error taking test audio recording. internal error: ' + err.message));
+            }
+
+            return cb(null, path.join(recordingsDirectory, recordingLabel));
+        });
+    });
 }
+
+function setup(){
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+}
+
+setup();
 
 module.exports.isConnected = isConnected;
 module.exports.takeTestRecording = takeTestRecording;

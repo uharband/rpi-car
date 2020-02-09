@@ -267,22 +267,14 @@ app.get('/audio/state', function (req, res) {
 app.get('/audio/taketestrecording', function (req, res) {
     logger.info('/audio/taketestrecording entered');
 
-    audioHealth.isConnected((err, result) => {
+    audioHealth.takeTestRecording(result.card, result.device,function (err, snapshot) {
         if (err) {
             res.status = 500;
             res.send({error: err.message});
         } else {
-            audioHealth.takeTestRecording(result.card, result.device,function (err, snapshot) {
-                if (err) {
-                    res.status = 500;
-                    res.send({error: err.message});
-                } else {
-                    res.set('Location', snapshot);
-                    res.send("recording taken successfully: " + snapshot);
-                }
-            });
+            res.set('Location', snapshot);
+            res.send("recording taken successfully: " + snapshot);
         }
-
     });
 });
 
