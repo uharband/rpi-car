@@ -13,13 +13,19 @@ audioRouter.use((req, res, next) => {
 });
 
 audioRouter.use((req, res, next) => {
-    if (!config.modules.audio) {
-        return routerUtils.handleModuleNotConfigured('audio', res);
+    if(req.path.startsWith('status')){
+        next();
     }
-    if (!audioController.isActive()) {
-        return routerUtils.handleModuleNotActive('audio', res);
+    else {
+        if (!config.modules.audio) {
+            return routerUtils.handleModuleNotConfigured('audio', res);
+        }
+        if (!audioController.isActive()) {
+            return routerUtils.handleModuleNotActive('audio', res);
+        }
+        next();
     }
-    next();
+
 });
 
 
@@ -29,7 +35,7 @@ audioRouter.use((req, res, next) => {
                        AUDIO
 
  ------------------------------------------------------ */
-audioRouter.get('/audio/on', function (req, res) {
+audioRouter.get('/on', function (req, res) {
     audioController.turnOn(function (error) {
             if (error !== "") {
                 res.send("started audio");
@@ -40,7 +46,7 @@ audioRouter.get('/audio/on', function (req, res) {
 });
 
 
-audioRouter.get('/audio/off', function (req, res) {
+audioRouter.get('/off', function (req, res) {
     audioController.turnOff(function (error) {
             if (error !== "") {
                 res.send("stopped audio");
@@ -50,7 +56,7 @@ audioRouter.get('/audio/off', function (req, res) {
         });
 });
 
-audioRouter.get('/audio/state', function (req, res) {
+audioRouter.get('/status/connection', function (req, res) {
     audioHealth.isConnected((err, result) => {
         if (err) {
             res.status = 500;
@@ -61,7 +67,7 @@ audioRouter.get('/audio/state', function (req, res) {
     });
 });
 
-audioRouter.get('/audio/taketestrecording', function (req, res) {
+audioRouter.get('/status/test-recording', function (req, res) {
     logger.info('/audio/taketestrecording entered');
 
     audioHealth.takeTestRecording(function (err, snapshot) {

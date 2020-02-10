@@ -13,13 +13,18 @@ videoRouter.use((req, res, next) => {
 });
 
 videoRouter.use((req, res, next) => {
-    if (!config.modules.video) {
-        return routerUtils.handleModuleNotConfigured('video', res);
+    if(req.path.startsWith('status')){
+        next();
     }
-    if (!videoController.isActive()) {
-        return routerUtils.handleModuleNotActive('video', res);
+    else{
+        if (!config.modules.video) {
+            return routerUtils.handleModuleNotConfigured('video', res);
+        }
+        if (!videoController.isActive()) {
+            return routerUtils.handleModuleNotActive('video', res);
+        }
+        next();
     }
-    next();
 });
 
 
@@ -98,7 +103,7 @@ videoRouter.get('/configure', function (req, res) {
     });
 });
 
-videoRouter.get('/state', function (req, res) {
+videoRouter.get('/status/connection', function (req, res) {
     videoHealth.isConnected((err, result) => {
         if (err) {
             res.status = 500;
@@ -109,7 +114,7 @@ videoRouter.get('/state', function (req, res) {
     });
 });
 
-videoRouter.get('/testsnapshot', function (req, res) {
+videoRouter.get('/status/test-snapshot', function (req, res) {
     videoHealth.takeTestSnapshot(function (err, snapshot) {
         if (err) {
             res.status = 500;

@@ -12,13 +12,19 @@ carRouter.use((req, res, next) => {
 });
 
 carRouter.use((req, res, next) => {
-    if (!config.modules.car) {
-        return routerUtils.handleModuleNotConfigured('car', res);
+    if(req.path.startsWith('status')){
+        next();
     }
-    if (!carController.isActive()) {
-        return routerUtils.handleModuleNotActive('car', res);
+    else {
+        if (!config.modules.car) {
+            return routerUtils.handleModuleNotConfigured('car', res);
+        }
+        if (!carController.isActive()) {
+            return routerUtils.handleModuleNotActive('car', res);
+        }
+        next();
     }
-    next()
+
 });
 
 
