@@ -13,7 +13,7 @@ audioRouter.use((req, res, next) => {
 });
 
 audioRouter.use((req, res, next) => {
-    if(req.path.startsWith('status')){
+    if(req.path.startsWith('/status')){
         next();
     }
     else {

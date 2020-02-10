@@ -71,18 +71,29 @@ app.get('/status', (req, res) => {
 });
 
 app.get('/start', function (req, res) {
-    setup(() => {
-        active = true;
-        logger.info('start completed');
-        res.send('start completed');
-    });
+    if (active) {
+        logger.info('already active');
+        res.send('was already active');
+    } else {
+        setup(() => {
+            active = true;
+            logger.info('start completed');
+            res.send('start completed');
+        });
+    }
+
 });
 app.get('/stop', function (req, res) {
-    shutdown(() => {
-        active = false;
-        logger.info('shutdown complete');
-        res.send('stop completed');
-    });
+    if (!active) {
+        logger.info('already not active');
+        res.send('was already stopped');
+    } else {
+        shutdown(() => {
+            active = false;
+            logger.info('shutdown complete');
+            res.send('stop completed');
+        });
+    }
 });
 
 function setup(callback) {
@@ -169,8 +180,7 @@ function exitHandler(options, err) {
                 process.exit();
             }
         });
-    }
-    else{
+    } else {
         if (options.exit) {
             process.exit();
         }

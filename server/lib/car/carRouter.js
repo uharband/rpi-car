@@ -12,7 +12,7 @@ carRouter.use((req, res, next) => {
 });
 
 carRouter.use((req, res, next) => {
-    if(req.path.startsWith('status')){
+    if(req.path.startsWith('/status')){
         next();
     }
     else {

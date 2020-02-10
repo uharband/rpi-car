@@ -13,7 +13,7 @@ videoRouter.use((req, res, next) => {
 });
 
 videoRouter.use((req, res, next) => {
-    if(req.path.startsWith('status')){
+    if(req.path.startsWith('/status')){
         next();
     }
     else{

@@ -13,7 +13,7 @@ function isConnected(cb) {
     logger.info('isConnected entered');
     utils.execute('arecord -l | grep -i "sound device"', function (err, res) {
         if (err) {
-            return cb(new Error('error checking if rpi-camera is connected. internal error: ' + err.message));
+            return cb(new Error('error checking if audio device is connected. internal error: ' + err.message));
         }
 
         try{

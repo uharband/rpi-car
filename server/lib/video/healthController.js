@@ -12,7 +12,7 @@ function isConnected(cb){
     logger.info('isConnected entered');
     utils.execute('/opt/vc/bin/vcgencmd get_camera', function(err, res) {
         if(err){
-            cb(new Error('error checking if rpi-camera is connected. internal error: ' + err.message));
+            return cb(new Error('error checking if rpi-camera is connected. internal error: ' + err.message));
         }
 
         try{
@@ -36,7 +36,7 @@ function takeTestSnapshot(cb){
 
     utils.execute('raspistill -o ' + snapshotLocation, function(err, res) {
         if(err){
-            cb(new Error('error taking snapshot from rpi-camera. internal error: ' + err.message));
+            return cb(new Error('error taking snapshot from rpi-camera. internal error: ' + err.message));
         }
 
         return cb(null, path.join(snapshotsDirectory, snapshotLabel));
