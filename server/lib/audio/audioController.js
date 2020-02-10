@@ -4,6 +4,7 @@ let shell = require('shelljs');
 let dryMode = false;
 
 let shuttingDown = false;
+let active = false;
 
 function setup(_dryMode, callback) {
     logger.info('setup audio entered. dryMode: ' + _dryMode);
@@ -11,6 +12,7 @@ function setup(_dryMode, callback) {
 
     // turn on upon setup
     turnOn(function (err) {
+    	active = true;
 		callback(err);
     })
 }
@@ -69,11 +71,17 @@ function shutdown(callback){
     shuttingDown = true;
     turnOff(() =>{
         logger.info('video shutdown complete');
+        active = false;
         callback();
     })
+}
+
+function isActive(){
+	return active;
 }
 
 module.exports.turnOn = turnOn;
 module.exports.turnOff = turnOff;
 module.exports.setup = setup;
 module.exports.shutdown = shutdown;
+module.exports.isActive = isActive;

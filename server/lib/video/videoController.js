@@ -26,6 +26,7 @@ let fs = require('fs');
 let logger = require('../log');
 let child_process = require('child_process');
 let format = require('dateformat');
+let active = false;
 
 let userConfigFile = path.join(__dirname, '..', 'config', 'user.json');
 let snapshotsDirectory = 'snapshots';
@@ -264,6 +265,7 @@ function setup(_dryMode, callback) {
         // not running, turn on normally
         else{
             turnOn((err) => {
+                active = false;
                 callback(err);
             });
         }
@@ -281,6 +283,7 @@ function shutdown(callback){
     shuttingDown = true;
     turnOff(() =>{
         logger.info('video shutdown complete');
+        active = false;
         callback();
     })
 }
@@ -436,6 +439,10 @@ String.prototype.replaceAll = function(search, replacement) {
     return target.replace(new RegExp(search, 'g'), replacement);
 };
 
+function isActive(){
+    return active;
+}
+
 
 
 module.exports.setup = setup;
@@ -445,3 +452,4 @@ module.exports.turnOff = turnOff;
 module.exports.configure = configure;
 module.exports.takeSnapshot = takeSnapshot;
 module.exports.deleteSnapshot = deleteSnapshot;
+module.exports.isActive = isActive;

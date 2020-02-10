@@ -49,6 +49,8 @@ setInterval(function () {
     work();
 }, 10);
 
+let active = false;
+
 // setup: open all pins and set them to LOW which is OFF
 function setup(_dryMode, callback) {
     logger.info('setup car entered. dryMode: ' + _dryMode);
@@ -72,6 +74,7 @@ function setup(_dryMode, callback) {
         left_backwards = new pwm.SoftPWM(left_backward_pin);
 
         stop();
+        active = true;
         callback();
     });
 }
@@ -98,6 +101,7 @@ function shutdown(callback) {
         left_backwards.destroy();
     }
     logger.info('car shutdown complete');
+    active = false;
     return callback();
 }
 
@@ -360,7 +364,9 @@ function stopTurning() {
     logger.info('stopTurning: exiting');
 }
 
-
+function isActive(){
+    return active;
+}
 
 module.exports.setup = setup;
 module.exports.shutdown = shutdown;
@@ -373,3 +379,4 @@ module.exports.startSharpRight = startSharpRight;
 module.exports.startSharpLeft = startSharpLeft;
 module.exports.stopTurning = stopTurning;
 module.exports.addCommand = addCommand;
+module.exports.isActive = isActive;
