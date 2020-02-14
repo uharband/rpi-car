@@ -13,10 +13,9 @@ videoRouter.use((req, res, next) => {
 });
 
 videoRouter.use((req, res, next) => {
-    if(req.path.startsWith('/status')){
+    if (req.path.startsWith('/status')) {
         next();
-    }
-    else{
+    } else {
         if (!config.modules.video) {
             return routerUtils.handleModuleNotConfigured('video', res);
         }
@@ -35,33 +34,49 @@ videoRouter.use((req, res, next) => {
  ------------------------------------------------------ */
 
 videoRouter.get('/on', function (req, res) {
-    videoController.turnOn(function (error) {
-        if (error === "") {
-            res.send("started video");
+    videoController.turnOn(function (err) {
+        if (err) {
+            res.status = 500;
+            res.send({action: "video turn on", result: "error", message: err.message});
         } else {
-            res.send(error);
+            res.send({action: "video turn on", result: "success"});
         }
     });
 });
 
 videoRouter.get('/off', function (req, res) {
-    videoController.turnOff(function (error) {
-        if (error !== "") {
-            res.send("stopped video");
+    videoController.turnOff(function (err) {
+        if (err) {
+            res.status = 500;
+            res.send({action: "video turn off", result: "error", message: err.message});
         } else {
-            res.send(error);
+            res.send({action: "video turn off", result: "success"});
         }
     });
 
 });
 
 videoRouter.post('/snapshots', function (req, res) {
-    videoController.takeSnapshot(function (error, snapshot) {
-        if (error !== "") {
-            res.set('Location', snapshot);
-            res.send("snapshot taken successfully: " + snapshot);
+    videoController.takeSnapshot(function (err, snapshot) {
+        if (err) {
+            res.status = 500;
+            res.send({action: "video take snapshot", result: "error", message: err.message});
         } else {
-            res.send(error);
+            res.set('Location', snapshot);
+            res.send({action: "video take snapshot", result: "success"});
+        }
+    });
+
+});
+
+videoRouter.get('/take-snapshot', function (req, res) {
+    videoController.takeSnapshot(function (err, snapshot) {
+        if (err) {
+            res.status = 500;
+            res.send({action: "video take snapshot", result: "error", message: err.message});
+        } else {
+            res.set('Location', snapshot);
+            res.send({action: "video take snapshot", result: "success"});
         }
     });
 
@@ -72,9 +87,10 @@ videoRouter.delete('/snapshots/:snapshot', function (req, res) {
 
     videoController.deleteSnapshot(snapshotName, function (err) {
         if (err) {
-            res.send("error deleting snapshot " + snapshotName + ": " + err.toString());
+            res.status = 500;
+            res.send({action: "video delete snapshot", result: "error", message: err.message});
         } else {
-            res.send('snapshot ' + snapshotName + ' deleted successfully');
+            res.send({action: "video delete snapshot", result: "success"});
         }
     });
 });
