@@ -1,5 +1,6 @@
 let logger = require('../log');
 let shell = require('shelljs');
+let utils = require('../utils');
 
 let dryMode = false;
 
@@ -21,43 +22,29 @@ function turnOn(callback){
 	logger.info('turning audio ON');
 
     if(dryMode){
-        return callback('');
+        return callback(null);
     }
 
-	shell.exec(__dirname + '/startAudioStreaming.sh', function(code, stdout, stderr) {
-		logger.info('startAudioStreaming Exit code:', code);
-		logger.info('startAudioStreaming Program output:', stdout);
-		logger.info('startAudioStreaming Program stderr:', stderr);
-		logger.info('startAudioStreaming: complete');
-		if(stderr !== ''){
-			return callback(new Error('error while starting audio! ' + stderr));
+	utils.execute(__dirname + '/startAudioStreaming.sh', function (err, res) {
+		if (err) {
+			return callback(new Error('error checking if mjpg_streamer is running. internal error: ' + err.message));
 		}
-		else{
-			callback();
-		}
+		callback();
 	});
 }
 
 function turnOff(callback){
 	logger.info('turning audio OFF');
 
-    if(dryMode){
-        return callback('');
-    }
+	if(dryMode){
+		return callback(null);
+	}
 
-	shell.exec(__dirname +  '/stopAudioStreaming.sh', function(code, stdout, stderr) {
-		logger.info('stopAudioStreaming Exit code:', code);
-		logger.info('stopAudioStreaming Program output:', stdout);
-		logger.info('stopAudioStreaming Program stderr:', stderr);
-		logger.info('stopAudioStreaming complete');
-
-		if(stderr !== ''){
-			callback('error while stopping audio! ' + stderr);
+	utils.execute(__dirname +  '/stopAudioStreaming.sh', function (err, res) {
+		if (err) {
+			return callback(new Error('error checking if mjpg_streamer is running. internal error: ' + err.message));
 		}
-		else{
-			callback('');
-		}
-				
+		callback();
 	});
 }
 
