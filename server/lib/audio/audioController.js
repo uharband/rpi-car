@@ -36,13 +36,15 @@ function turnOn(callback){
 				return callback(new Error('error while launching audio session. internal error: ' + err.message));
 			}
 
-			logger.info('launching vlc');
-			utils.execute('sudo -u pi screen -d -m -S stream bash -c "vlc --live-caching 100 --intf dummy rtp://127.0.0.1:1234 :sout=\'#transcode{vcodec=none,acodec=mp3,ab=128,channels=2,samplerate=44100}:http{mux=mp3,dst=:8081/}\' :sout-keep"',  (err) => {
-				if (err) {
-					return callback(new Error('error while attempting to delete old audio session. internal error: ' + err.message));
-				}
-				callback(null);
-			});
+			setTimeout(() =>{
+				logger.info('launching vlc');
+				utils.execute('sudo -u pi screen -d -m -S stream bash -c "vlc --live-caching 100 --intf dummy rtp://127.0.0.1:1234 :sout=\'#transcode{vcodec=none,acodec=mp3,ab=128,channels=2,samplerate=44100}:http{mux=mp3,dst=:8081/}\' :sout-keep"',  (err) => {
+					if (err) {
+						return callback(new Error('error while attempting to delete old audio session. internal error: ' + err.message));
+					}
+					callback(null);
+				});
+			}, 5000);
 		});
 	});
 }
