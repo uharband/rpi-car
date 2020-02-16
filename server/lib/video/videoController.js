@@ -258,9 +258,16 @@ function setup(_dryMode, callback) {
 
     // if video process was already running before startup, possibly due to bad previous shutdown
     // restart the video process
+    logger.info('checking if video is already running')
     isRunning((err, running) => {
         // ignore unexpected errors here
         if (err || running) {
+            if(err){
+                logger.error('error while checking if video is running. video will be restarted: ' + err.message);
+            }
+            else{
+                logger.info('video is already running, video will be restarted');
+            }
             restart((err) => {
                 callback(err);
             })

@@ -2,6 +2,7 @@ let shell = require('shelljs');
 let logger = require('./log');
 
 function execute(command, cb) {
+    logger.info('execute entered. command: ' + command);
     shell.exec(command, (code, stdout, stderr) => {
         logger.info('after executing ' + command + ' code=' + code + ', stdout=' + stdout + ', stdrr=' + stderr);
         if (code === 0) {

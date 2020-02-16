@@ -98,103 +98,59 @@ app.get('/stop', function (req, res) {
 });
 
 function setup(callback) {
+    logger.info('setup: entered');
+
     let setupFunctions = [];
+
     if (config.modules.video) {
+        logger.info('video is enabled. adding to setup functions');
         setupFunctions.push(videoController.setup.bind(null, dryMode));
     }
     if (config.modules.audio) {
+        logger.info('audio is enabled. adding to setup functions');
         setupFunctions.push(audioController.setup.bind(null, dryMode));
     }
     if (config.modules.car) {
+        logger.info('car is enabled. adding to setup functions');
         setupFunctions.push(carController.setup.bind(null, dryMode));
     }
 
     async.series(setupFunctions, (err, res) =>{
-        logger.info('done setup');
+        if(err){
+            logger.error('error while setting up: ' + err.message);
+        }
+        else{
+            logger.info('setup completed successfully');
+        }
         callback(err);
     });
-
-    return;
-
-    let componentsRequiringSetup = getNumberOfActiveComponents();
-
-    if (config.modules.video) {
-
-        videoController.setup(dryMode, () => {
-            componentsRequiringSetup--;
-            if (componentsRequiringSetup === 0) {
-                callback();
-            }
-        });
-    }
-
-    if (config.modules.audio) {
-        audioController.setup(dryMode, () => {
-            componentsRequiringSetup--;
-            if (componentsRequiringSetup === 0) {
-                callback();
-            }
-        });
-    }
-
-    if (config.modules.car) {
-        carController.setup(dryMode, () => {
-            componentsRequiringSetup--;
-            if (componentsRequiringSetup === 0) {
-                callback();
-            }
-        });
-    }
 }
 
 function shutdown(callback) {
     let shutdownFunctions = [];
 
     if (config.modules.video) {
+        logger.info('video is enabled. adding to shutdown functions');
         shutdownFunctions.push(videoController.shutdwon);
     }
     if (config.modules.audio) {
+        logger.info('audio is enabled. adding to shutdown functions');
         shutdownFunctions.push(audioController.shutdown);
     }
     if (config.modules.car) {
+        logger.info('car is enabled. adding to shutdown functions');
         shutdownFunctions.push(carController.shutdown);
     }
 
     async.series(shutdownFunctions, (err, res) =>{
-        logger.info('done shutting down');
+        if(err){
+            logger.error('error while shutting down: ' + err.message);
+        }
+        else{
+            logger.info('shutdown completed successfully');
+        }
         callback(err);
     });
-
-    return;
-
-    let componentsRequiringShutdown = getNumberOfActiveComponents();
-
-    if (config.modules.car) {
-        carController.shutdown(() => {
-            componentsRequiringShutdown--;
-            if (componentsRequiringShutdown === 0) {
-                callback();
-            }
-        });
-
-    }
-    if (config.modules.audio) {
-        audioController.turnOff(() => {
-            componentsRequiringShutdown--;
-            if (componentsRequiringShutdown === 0) {
-                callback();
-            }
-        });
-    }
-
-    if (config.modules.video) {
-        videoController.turnOff(() => {
-            componentsRequiringShutdown--;
-            if (componentsRequiringShutdown === 0) {
-                callback();
-            }
-        });
-    }
 }
 
 function getNumberOfActiveComponents() {
