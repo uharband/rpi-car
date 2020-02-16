@@ -19,7 +19,6 @@
 
  */
 
-let shell = require('shelljs');
 let config = require('config');
 let path = require('path');
 let fs = require('fs');
@@ -70,7 +69,7 @@ function turnOn(callback) {
         return callback(null);
     }
 
-    logger.info('before turning on, checking if already running')
+    logger.info('before turning on, checking if already running');
     // check if already running
     isRunning((err, running) => {
         // error while checking if running
@@ -153,7 +152,7 @@ function waitForVideo(running, until, callback) {
         isRunning((err, isRunning) => {
             let now = new Date();
             logger.info('now: ' + now + ', until: ' + until);
-            logger.info('running = ' + running + ', isRunning: ' + isRunning)
+            logger.info('running = ' + running + ', isRunning: ' + isRunning);
             if (running === isRunning) {
                 logger.info('waitForVideo: reached expected state');
                 callback();
@@ -189,7 +188,7 @@ function turnOff(callback) {
     }
 
     logger.info('about to kill mjpg_streamer');
-    utils.execute('killall -9 mjpg_streamer', function (err, res) {
+    utils.execute('killall -9 mjpg_streamer', function (err) {
         // error trying to kill mjpg_streamer. ignoring and waiting for video to stop
         if (err) {
             logger.error('error checking if mjpg_streamer is running. internal error: ' + err.message);
@@ -219,7 +218,7 @@ function takeSnapshot(callback) {
     let snapshotLabel = new Date().toISOString().replaceAll(':', '-') + '.jpg';
     let snapshotLocation = path.join(snapshotsFullPath, snapshotLabel);
 
-    utils.execute('ffmpeg -f MJPEG -y -i http://localhost:' + port + '/?action=snapshot -r 1 -vframes 1 -q:v 1 ' + snapshotLocation, function (err, res) {
+    utils.execute('ffmpeg -f MJPEG -y -i http://localhost:' + port + '/?action=snapshot -r 1 -vframes 1 -q:v 1 ' + snapshotLocation, function (err) {
         if (err) {
             return callback(new Error('error taking snapshot. internal error: ' + err.message));
         }
@@ -247,6 +246,7 @@ function deleteSnapshot(snapshotName, callback) {
 function setup(_dryMode, callback) {
     logger.info('setup video entered. dryMode: ' + _dryMode);
     dryMode = _dryMode;
+    shuttingDown = false;
 
     try {
         if (!fs.existsSync(snapshotsFullPath)) {
@@ -258,7 +258,7 @@ function setup(_dryMode, callback) {
 
     // if video process was already running before startup, possibly due to bad previous shutdown
     // restart the video process
-    logger.info('checking if video is already running')
+    logger.info('checking if video is already running');
     isRunning((err, running) => {
         // ignore unexpected errors here
         if (err || running) {
@@ -288,6 +288,7 @@ function shutdown(callback) {
         return callback();
     }
     if (shuttingDown) {
+        logger.warn('video shutdown called while shutting down. will not turn off video again');
         return callback();
     }
     shuttingDown = true;
@@ -390,7 +391,7 @@ function resolveConfiguration() {
 function generateCommand() {
     let inputCommand = generateInputCommand();
     let outputCommand = generateOutputCommand();
-    let command = 'mjpg_streamer ' + inputCommand + outputCommand
+    let command = 'mjpg_streamer ' + inputCommand + outputCommand;
     logger.info('launch mjpg_streamer command: ' + command);
     return command;
 }
