@@ -1,4 +1,5 @@
 let express = require('express');
+let async = require('async');
 let app = express();
 
 let logger = require('./lib/log');
@@ -97,8 +98,28 @@ app.get('/stop', function (req, res) {
 });
 
 function setup(callback) {
-    let componentsRequiringSetup = getNumberOfActiveComponents();
+    let setupFunctions = [];
     if (config.modules.video) {
+        setupFunctions.push(videoController.setup.bind(null, dryMode));
+    }
+    if (config.modules.audio) {
+        setupFunctions.push(audioController.setup.bind(null, dryMode));
+    }
+    if (config.modules.car) {
+        setupFunctions.push(carController.setup.bind(null, dryMode));
+    }
+
+    async.series(setupFunctions, (err, res) =>{
+        logger.info('done setup');
+        callback(err);
+    });
+
+    return;
+
+    let componentsRequiringSetup = getNumberOfActiveComponents();
+
+    if (config.modules.video) {
+
         videoController.setup(dryMode, () => {
             componentsRequiringSetup--;
             if (componentsRequiringSetup === 0) {
@@ -127,6 +148,25 @@ function setup(callback) {
 }
 
 function shutdown(callback) {
+    let shutdownFunctions = [];
+
+    if (config.modules.video) {
+        shutdownFunctions.push(videoController.shutdwon);
+    }
+    if (config.modules.audio) {
+        shutdownFunctions.push(audioController.shutdown);
+    }
+    if (config.modules.car) {
+        shutdownFunctions.push(carController.shutdown);
+    }
+
+    async.series(shutdownFunctions, (err, res) =>{
+        logger.info('done shutting down');
+        callback(err);
+    });
+
+    return;
+
     let componentsRequiringShutdown = getNumberOfActiveComponents();
 
     if (config.modules.car) {
