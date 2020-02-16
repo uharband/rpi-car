@@ -9,6 +9,7 @@ let active = false;
 function setup(_dryMode, callback) {
     logger.info('setup audio entered. dryMode: ' + _dryMode);
     dryMode = _dryMode;
+    shuttingDown = false;
 
     // turn on upon setup
     turnOn(function (err) {
@@ -70,6 +71,7 @@ function shutdown(callback){
         return callback();
     }
     if(shuttingDown){
+		logger.warn('audio shutdown called while shutting down. will not turn off audio again');
         return callback();
     }
     shuttingDown = true;
