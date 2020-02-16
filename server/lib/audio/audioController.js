@@ -1,5 +1,4 @@
 let logger = require('../log');
-let shell = require('shelljs');
 let utils = require('../utils');
 
 let dryMode = false;
@@ -25,11 +24,26 @@ function turnOn(callback){
         return callback(null);
     }
 
-	utils.execute(__dirname + '/startAudioStreaming.sh', function (err, res) {
+    logger.info('deleting old audio session if exists..');
+    utils.execute('screen -ls | grep \'stream\\|capture\' | cut -d. -f1 | awk \'{print $1}\' | xargs -r kill',  (err) => {
 		if (err) {
-			return callback(new Error('error checking if mjpg_streamer is running. internal error: ' + err.message));
+			return callback(new Error('error while attempting to delete old audio session. internal error: ' + err.message));
 		}
-		callback();
+
+		logger.info('launching audio capture');
+		utils.execute('screen -d -m -S capture bash -c \'arecord -B 0 -D plughw:1,0 -r 44100 -c 2 -f S16_LE | ffmpeg -i - -acodec mp2 -ab 128k -ac 2 -f rtp rtp://127.0.0.1:1234\' ',  (err) => {
+			if (err) {
+				return callback(new Error('error while launching audio session. internal error: ' + err.message));
+			}
+
+			logger.info('launching vlc');
+			utils.execute('sudo -u pi screen -d -m -S stream bash -c "vlc --live-caching 100 --intf dummy rtp://127.0.0.1:1234 :sout=\'#transcode{vcodec=none,acodec=mp3,ab=128,channels=2,samplerate=44100}:http{mux=mp3,dst=:8081/}\' :sout-keep"',  (err) => {
+				if (err) {
+					return callback(new Error('error while attempting to delete old audio session. internal error: ' + err.message));
+				}
+				callback(null);
+			});
+		});
 	});
 }
 
@@ -40,11 +54,12 @@ function turnOff(callback){
 		return callback(null);
 	}
 
-	utils.execute(__dirname +  '/stopAudioStreaming.sh', function (err, res) {
+	logger.info('deleting audio sessions');
+	utils.execute('screen -ls | grep \'stream\\|capture\' | cut -d. -f1 | awk \'{print $1}\' | xargs -r kill',  (err) => {
 		if (err) {
-			return callback(new Error('error checking if mjpg_streamer is running. internal error: ' + err.message));
+			return callback(new Error('error while attempting to delete audio session. internal error: ' + err.message));
 		}
-		callback();
+		callback(null);
 	});
 }
 
