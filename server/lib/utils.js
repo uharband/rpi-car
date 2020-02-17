@@ -7,6 +7,7 @@ function execute(command, cb) {
 
     try{
         let result = child_process.execSync(command);
+        cb(null, {code: 0, stdout: result, stderr: ""});
     }
     catch (e) {
         return cb(new Error(e.message));
