@@ -44,7 +44,7 @@ let timestamp;
 let port;
 let inputCommand;
 let videoOperationTimeout = 5000;
-let shuttingDown = false;
+
 
 const InputType = {
     raspberry_camera: 'input_raspicam.so',
@@ -246,7 +246,6 @@ function deleteSnapshot(snapshotName, callback) {
 function setup(_dryMode, callback) {
     logger.info('setup video entered. dryMode: ' + _dryMode);
     dryMode = _dryMode;
-    shuttingDown = false;
 
     try {
         if (!fs.existsSync(snapshotsFullPath)) {
@@ -269,13 +268,14 @@ function setup(_dryMode, callback) {
                 logger.info('video is already running, video will be restarted');
             }
             restart((err) => {
+                active = true;
                 callback(err);
             })
         }
         // not running, turn on normally
         else {
             turnOn((err) => {
-                active = false;
+                active = true;
                 callback(err);
             });
         }
@@ -287,13 +287,13 @@ function shutdown(callback) {
     if (dryMode) {
         return callback();
     }
-    if (shuttingDown) {
-        logger.warn('video shutdown called while shutting down. will not turn off video again');
+    if (!active) {
+        logger.warn('video shutdown called while not active');
         return callback();
     }
-    shuttingDown = true;
-    turnOff(() => {
-        logger.info('video shutdown complete');
+
+    turnOff((err) => {
+        logger.info('video shutdown complete' + (err ? 'error while turning off video: ' + err.message : ''));
         active = false;
         callback();
     })

@@ -11,9 +11,11 @@ let pwm;
 ///////////////// Define Motor Driver GPIO Pins /////////////////
 // since we're using software PWM we can control each GPIO pin independently
 // this allows us to use any GPIO pin
+
 // Motor A, Right Side GPIO CONSTANTS
 let right_forward_pin = config.car.right_forward_pin; // 'P1-32';	// IN1 - Forward Drive
 let right_backward_pin = config.car.right_backward_pin; // 'P1-33';	// IN2 - Reverse Drive
+
 // Motor B, Left Side GPIO CONSTANTS
 let left_forward_pin = config.car.left_forward_pin; // 'P1-12';	    // IN1 - Forward Drive
 let left_backward_pin = config.car.left_backward_pin; // 'P1-35';	// IN2 - Reverse Drive
@@ -43,7 +45,6 @@ let currentCommand = 0;
 let requestedState = {};
 let executingState = {};
 
-let shuttingDown = false;
 
 setInterval(function () {
     work();
@@ -83,10 +84,11 @@ function shutdown(callback) {
     if(dryMode){
         return callback();
     }
-    if(shuttingDown){
+
+    if(!active){
+        logger.warn('car shutdown called while not active');
         return callback();
     }
-    shuttingDown = true;
 
     if(right_forward !== null && right_forward !== undefined){
         right_forward.destroy();

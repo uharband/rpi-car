@@ -3,13 +3,11 @@ let utils = require('../utils');
 
 let dryMode = false;
 
-let shuttingDown = false;
 let active = false;
 
 function setup(_dryMode, callback) {
     logger.info('setup audio entered. dryMode: ' + _dryMode);
     dryMode = _dryMode;
-    shuttingDown = false;
 
     // turn on upon setup
     turnOn(function (err) {
@@ -70,13 +68,13 @@ function shutdown(callback){
     if(dryMode){
         return callback();
     }
-    if(shuttingDown){
-		logger.warn('audio shutdown called while shutting down. will not turn off audio again');
+    if(!active){
+		logger.warn('audio shutdown called while not active');
         return callback();
     }
-    shuttingDown = true;
-    turnOff(() =>{
-        logger.info('video shutdown complete');
+
+    turnOff((err) =>{
+        logger.info('audio shutdown complete' + (err ? 'error while turning off audio: ' + err.message : ''));
         active = false;
         callback();
     })
