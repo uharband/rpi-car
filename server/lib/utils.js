@@ -1,8 +1,18 @@
 let shell = require('shelljs');
 let logger = require('./log');
+let child_process = require('child_process');
 
 function execute(command, cb) {
     logger.info('execute entered. command: ' + command);
+
+    try{
+        let result = child_process.execSync(command);
+    }
+    catch (e) {
+        return cb(new Error(e.message));
+    }
+
+    return;
     shell.exec(command, (code, stdout, stderr) => {
         logger.info('after executing ' + command + ' code=' + code + ', stdout=' + stdout + ', stdrr=' + stderr);
         if (code === 0) {

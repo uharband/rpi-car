@@ -128,7 +128,7 @@ function turnOn(callback) {
 function isRunning(callback) {
     logger.info('isRunning - entered');
     if (dryMode) {
-        return callback('dryMode');
+        return callback();
     }
 
     utils.execute('ps -ef|grep mjpg_streamer|wc -l', function (err, res) {
