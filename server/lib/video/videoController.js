@@ -83,12 +83,12 @@ function turnOn(callback) {
             callback(null);
         } else {
             let myenv = Object.create( process.env );
-            env.LD_LIBRARY_PATH = config.video.root;
+            myenv.LD_LIBRARY_PATH = config.video.root;
             // run the streamer
             console.log('command is ' + command);
             mjpg_streamer_process = child_process.spawn(command.entry, command.args, {
                 env: myenv,
-                detached: true
+                shell: true
             });
 
             mjpg_streamer_process.stdout.on('data', function (data) {
