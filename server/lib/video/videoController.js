@@ -83,7 +83,8 @@ function turnOn(callback) {
             callback(null);
         } else {
             // run the streamer
-            mjpg_streamer_process = child_process.spawn(command, {
+            console.log('command is ' + command);
+            mjpg_streamer_process = child_process.spawn(command.entry, command.args, {
                 env: {
                     LD_LIBRARY_PATH: config.video.root
                 },
@@ -391,7 +392,10 @@ function resolveConfiguration() {
 function generateCommand() {
     let inputCommand = generateInputCommand();
     let outputCommand = generateOutputCommand();
-    let command = 'mjpg_streamer ' + inputCommand + outputCommand;
+    let params = [];
+    params.push(inputCommand);
+    params.push(outputCommand);
+    let command = {entry: 'mjpg_streamer', args: params};
     logger.info('launch mjpg_streamer command: ' + command);
     return command;
 }
