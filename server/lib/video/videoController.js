@@ -88,8 +88,7 @@ function turnOn(callback) {
                 env: {
                     LD_LIBRARY_PATH: config.video.root
                 },
-                detached: true,
-                cwd: 'usr/local/bin'
+                detached: true
             });
 
             mjpg_streamer_process.stdout.on('data', function (data) {
@@ -98,6 +97,10 @@ function turnOn(callback) {
 
             mjpg_streamer_process.stderr.on('data', function (data) {
                 logger.info('data from stderr: ' + data);
+            });
+
+            mjpg_streamer_process.on('error', function (err) {
+                logger.info('err: ' + err);
             });
 
             let now = new Date();
@@ -396,7 +399,7 @@ function generateCommand() {
     let params = [];
     params.push(inputCommand);
     params.push(outputCommand);
-    let command = {entry: 'mjpg_streamer', args: params};
+    let command = {entry: '/usr/local/bin/mjpg_streamer', args: params};
     logger.info('launch mjpg_streamer command: ' + command);
     return command;
 }
