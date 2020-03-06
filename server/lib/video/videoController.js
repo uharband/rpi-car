@@ -88,7 +88,8 @@ function turnOn(callback) {
                 env: {
                     LD_LIBRARY_PATH: config.video.root
                 },
-                detached: true
+                detached: true,
+                cwd: 'usr/local/bin'
             });
 
             mjpg_streamer_process.stdout.on('data', function (data) {
