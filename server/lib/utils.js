@@ -10,7 +10,7 @@ function spawn(command, cb) {
 
 function execute(command, cb) {
     logger.info('execute entered. command: ' + command);
-    child_process.spawn(command);
+
     shell.exec(command, (code, stdout, stderr) => {
         logger.info('after executing ' + command + ' code=' + code + ', stdout=' + stdout + ', stdrr=' + stderr);
         if (code === 0) {
