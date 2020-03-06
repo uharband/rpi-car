@@ -2,18 +2,15 @@ let shell = require('shelljs');
 let logger = require('./log');
 let child_process = require('child_process');
 
+function spawn(command, cb) {
+    logger.info('execute entered. command: ' + command);
+    let child = child_process.spawn(command);
+    cb(null, child);
+}
+
 function execute(command, cb) {
     logger.info('execute entered. command: ' + command);
-
-    try{
-        let result = child_process.execSync(command);
-        cb(null, {code: 0, stdout: result, stderr: ""});
-    }
-    catch (e) {
-        return cb(new Error(e.message));
-    }
-
-    return;
+    child_process.spawn(command);
     shell.exec(command, (code, stdout, stderr) => {
         logger.info('after executing ' + command + ' code=' + code + ', stdout=' + stdout + ', stdrr=' + stderr);
         if (code === 0) {

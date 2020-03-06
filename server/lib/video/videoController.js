@@ -83,7 +83,7 @@ function turnOn(callback) {
             callback(null);
         } else {
             // run the streamer
-            mjpg_streamer_process = child_process.exec(command, {
+            mjpg_streamer_process = child_process.spawn(command, {
                 env: {
                     LD_LIBRARY_PATH: config.video.root
                 },
