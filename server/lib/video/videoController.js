@@ -397,17 +397,25 @@ function generateCommand() {
     let inputCommand = generateInputCommand();
     let outputCommand = generateOutputCommand();
     let params = [];
-    params.push(inputCommand);
-    params.push(outputCommand);
+    inputCommand.forEach((item) => {
+        params.push(item);
+    });
+    outputCommand.forEach((item) => {
+        params.push(item);
+    });
     let command = {entry: '/usr/local/bin/mjpg_streamer', args: params};
-    logger.info('launch mjpg_streamer command: ' + command);
+    logger.info('launch mjpg_streamer command: ' + JSON.stringify(command));
     return command;
 }
 
 function generateOutputCommand() {
     let wwwPath = path.join(root, 'www');
     let listeningPort = port ? '--port ' + port : '';
-    return ' -o "output_http.so ' + listeningPort + ' -w ' + wwwPath + '"';
+    let outputCommand = [];
+    outputCommand.push('-o');
+    let outputCommandArgs = '"output_http.so ' + listeningPort + ' -w ' + wwwPath + '"';
+    outputCommand.push(outputCommandArgs);
+    return outputCommand;
 }
 
 function generateInputCommand() {
@@ -433,23 +441,26 @@ function generateInputCommandUvc() {
 }
 
 function generateInputCommandRpiCam() {
-    inputCommand = ' -i "input_raspicam.so ';
+    let inputCommand = [];
+    inputCommand.push('-i');
+    let inputCommandArgs = '"input_raspicam.so ';
     if (width && height) {
-        inputCommand += ' --width ' + width + ' --height ' + height;
+        inputCommandArgs += ' --width ' + width + ' --height ' + height;
     }
     if (fps) {
-        inputCommand += ' --framerate ' + fps;
+        inputCommandArgs += ' --framerate ' + fps;
     }
     if (jpgQuality) {
-        inputCommand += ' --quality ' + jpgQuality;
+        inputCommandArgs += ' --quality ' + jpgQuality;
     }
     if (verticalFlip) {
-        inputCommand += ' --vf';
+        inputCommandArgs += ' --vf';
     }
     if (timestamp) {
-        inputCommand += ' --timestamp';
+        inputCommandArgs += ' --timestamp';
     }
-    inputCommand += '"';
+    inputCommandArgs += '"';
+    inputCommand.push(inputCommandArgs);
     return inputCommand;
 }
 
