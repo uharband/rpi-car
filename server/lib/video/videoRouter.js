@@ -70,32 +70,38 @@ videoRouter.post('/snapshots', function (req, res) {
 });
 
 videoRouter.get('/take-snapshot', function (req, res) {
+    let action = "video take snapshot";
+
     videoController.takeSnapshot(function (err, snapshot) {
         if (err) {
             res.status = 500;
-            res.send({action: "video take snapshot", result: "error", message: err.message});
+            res.send({action: action, result: "error", message: err.message});
         } else {
             res.set('Location', snapshot);
-            res.send({action: "video take snapshot", result: "success"});
+            res.send({action: action, result: "success", snapshot: snapshot});
         }
     });
 
 });
 
 videoRouter.delete('/snapshots/:snapshot', function (req, res) {
+    let action = "video delete snapshot";
+
     let snapshotName = req.params.snapshot;
 
     videoController.deleteSnapshot(snapshotName, function (err) {
         if (err) {
             res.status = 500;
-            res.send({action: "video delete snapshot", result: "error", message: err.message});
+            res.send({action: action, result: "error", message: err.message});
         } else {
-            res.send({action: "video delete snapshot", result: "success"});
+            res.send({action: action, result: "success"});
         }
     });
 });
 
 videoRouter.get('/configure', function (req, res) {
+    let action = "video configure";
+
     let width = (isNaN(parseInt(req.query.width)) ? null : parseInt(req.query.width));
     let height = (isNaN(parseInt(req.query.height)) ? null : parseInt(req.query.height));
     let jpgQuality = (isNaN(parseInt(req.query.jpgQuality)) ? null : parseInt(req.query.jpgQuality));
@@ -110,34 +116,37 @@ videoRouter.get('/configure', function (req, res) {
         verticalFlip = (req.query.verticalFlip === 'true');
     }
 
-    videoController.configure(width, height, verticalFlip, jpgQuality, fps, function (error) {
-        if (error !== "") {
-            res.send("configured successfully");
+    videoController.configure(width, height, verticalFlip, jpgQuality, fps, function (err) {
+        if (err) {
+            res.status = 500;
+            res.send({action: action, result: "error", error: err.message});
         } else {
-            res.send(error);
+            res.send({action: action, result: "success"});
         }
     });
 });
 
 videoRouter.get('/status/connection', function (req, res) {
+    let action = "video check connection";
     videoHealth.isConnected((err, result) => {
         if (err) {
             res.status = 500;
-            res.send({error: err.message});
+            res.send({action: action, result: "error", error: err.message});
         } else {
-            res.send(result);
+            res.send({action: "video check connection", result: result });
         }
     });
 });
 
 videoRouter.get('/status/test-snapshot', function (req, res) {
     videoHealth.takeTestSnapshot(function (err, snapshot) {
+        let action = "video test snapshot";
         if (err) {
             res.status = 500;
-            res.send({error: err.message});
+            res.send({action: action, result: "error", error: err.message});
         } else {
             res.set('Location', snapshot);
-            res.send("snapshot taken successfully: " + snapshot);
+            res.send({action: action, result: "success", snapshot: snapshot});
         }
     });
 });

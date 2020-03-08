@@ -82,12 +82,13 @@ function turnOn(callback) {
             logger.info('already running, nothing to do');
             callback(null);
         } else {
-            let myenv = Object.create( process.env );
-            myenv.LD_LIBRARY_PATH = config.video.root;
+            // base our env on the existing process env
+            let myEnv = Object.create( process.env );
+            myEnv.LD_LIBRARY_PATH = config.video.root;
+
             // run the streamer
-            console.log('command is ' + command);
             mjpg_streamer_process = child_process.spawn(command.entry, command.args, {
-                env: myenv,
+                env: myEnv,
                 shell: true
             });
 
