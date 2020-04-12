@@ -14,15 +14,18 @@ let audioRouter = require('./lib/audio/audioRouter');
 let videoController = require('./lib/video/videoController');
 let videoRouter = require('./lib/video/videoRouter');
 
-let dryMode = false;
 let active = false;
 
 let startupTime;
 
 // get command line args
 if (process.argv.length > 2 && process.argv[2].toLowerCase() === 'drymode') {
-    dryMode = true;
+    global.dryMode = true;
 }
+else{
+    global.dryMode = false;
+}
+
 logger.info('dryMode = ' + dryMode);
 
 // enabled modules
@@ -104,15 +107,15 @@ function setup(callback) {
 
     if (config.modules.car) {
         logger.info('car is enabled. adding to setup functions');
-        setupFunctions.push(carController.setup.bind(null, dryMode));
+        setupFunctions.push(carController.setup);
     }
     if (config.modules.video) {
         logger.info('video is enabled. adding to setup functions');
-        setupFunctions.push(videoController.setup.bind(null, dryMode));
+        setupFunctions.push(videoController.setup);
     }
     if (config.modules.audio) {
         logger.info('audio is enabled. adding to setup functions');
-        setupFunctions.push(audioController.setup.bind(null, dryMode));
+        setupFunctions.push(audioController.setup);
     }
 
     async.series(setupFunctions, (err, res) =>{

@@ -10,6 +10,13 @@ let snapshotsFullPath = path.join(__dirname, '..', '..','app', snapshotsDirector
 
 function isConnected(cb){
     logger.info('isConnected entered');
+
+    if(dryMode){
+        return setTimeout(() =>{
+            return cb(null, {supported: 1, detected: 0});
+        }, 1000);
+    }
+
     utils.execute('/opt/vc/bin/vcgencmd get_camera', function(err, res) {
         if(err){
             return cb(new Error('error checking if rpi-camera is connected. internal error: ' + err.message));
@@ -31,8 +38,16 @@ function isConnected(cb){
 
 function takeTestSnapshot(cb){
     logger.info('takeTestSnapshot entered');
+
     let snapshotLabel = 'testsnapshot.jpg';
+    if(dryMode){
+        snapshotLabel = 'drymode_' + snapshotLabel;
+    }
     let snapshotLocation = path.join(snapshotsFullPath, snapshotLabel);
+
+    if(dryMode){
+        return cb(null, path.join(snapshotsDirectory, snapshotLabel));
+    }
 
     utils.execute('raspistill -o ' + snapshotLocation, function(err, res) {
         if(err){

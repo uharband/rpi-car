@@ -26,9 +26,6 @@ let left_forward;
 let left_backwards;
 
 
-let dryMode = false;
-
-
 let vertical_state = new Enum(['going_forward', 'going_backwards', 'still']);
 let horizontal_state = new Enum(['none', 'right_moderate', 'right_sharp', 'left_moderate', 'left_sharp']);
 let v_state = vertical_state.still;
@@ -53,11 +50,8 @@ setInterval(function () {
 let active = false;
 
 // setup: open all pins and set them to LOW which is OFF
-function setup(_dryMode, callback) {
-    logger.info('setup car entered. dryMode: ' + _dryMode);
-    if(_dryMode !== null){
-        dryMode = _dryMode;
-    }
+function setup(callback) {
+    logger.info('setup car entered');
 
     currentSpeed = 0;
 

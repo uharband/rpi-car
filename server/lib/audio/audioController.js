@@ -1,13 +1,10 @@
 let logger = require('../log');
 let utils = require('../utils');
 
-let dryMode = false;
-
 let active = false;
 
-function setup(_dryMode, callback) {
-    logger.info('setup audio entered. dryMode: ' + _dryMode);
-    dryMode = _dryMode;
+function setup(callback) {
+    logger.info('setup audio entered');
 
     // turn on upon setup
     turnOn(function (err) {

@@ -33,7 +33,6 @@ let snapshotsDirectory = 'snapshots';
 let snapshotsFullPath = path.join(__dirname, '..', '..', 'app', snapshotsDirectory);
 let mjpg_streamer_process = null;
 let playing = false;
-let dryMode = false;
 let root = config.video.root;
 let width;
 let height;
@@ -249,9 +248,8 @@ function deleteSnapshot(snapshotName, callback) {
     });
 }
 
-function setup(_dryMode, callback) {
-    logger.info('setup video entered. dryMode: ' + _dryMode);
-    dryMode = _dryMode;
+function setup(callback) {
+    logger.info('setup video entered');
 
     try {
         if (!fs.existsSync(snapshotsFullPath)) {
