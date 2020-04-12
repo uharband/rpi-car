@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>car starter</title>
+</head>
+
+<body>
+    <div class="container">
+        <!-- READY -->
+        <div class="row align-items-start">
+            <div class="col">
+                <div class="alert alert-primary text-center" role="alert">
+                    Ready
+                </div>
+                <div class="card-deck">
+                    <div id="video-card" class="card text-center">
+                        <div id="video-card-header" class="card-header">
+                            Video
+                        </div>
+                        <div class="card-body">
+                            <p id="video-status" class="card-text">Checking connection...</p>
+                            <a href="#" id="video-status-check-btn" class="btn btn-primary">Check Now</a>
+                        </div>
+                        <div class="card-footer">
+                            <small id="video-updater" class="text-muted">Last updated 3 mins ago</small>
+                        </div>
+                    </div>
+
+                    <div class="card text-center">
+                        <div class="card-header">
+                            Audio
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Microphone is connected</p>
+                            <a href="#" class="btn btn-primary">Check Now</a>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">Last updated 3 mins ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SET -->
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="alert alert-primary text-center" role="alert">
+                    Set
+                </div>
+            </div>
+        </div>
+
+        <!-- GO -->
+        <div class="row align-items-end">
+            <div class="col">
+                <div class="alert alert-primary text-center" role="alert">
+                    Go!
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-primary btn-lg">Go!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+    <script>
+        $(function () {
+            $("#video-status-check-btn").on('click', function () { checkVideoStatus(); });
+            checkVideoStatus();
+        })
+
+        function initializeVideoCard() {
+            $("#video-card-header").removeClass("bg-success").removeClass("bg-danger");
+            $("#video-status").text("checking connection...");
+        }
+
+        function checkVideoStatus() {
+            initializeVideoCard();
+            $("#video-status-check-btn").addClass('disabled');
+            $.ajax({
+                type: 'GET',
+                url: '/video/status/connection',
+                success: function (data) {
+                    let cameraOk = true;
+                    let cameraStatus = 'camera connected!';
+                    if (!data.result.supported) {
+                        cameraStatus = 'camera not enabled';
+                        cameraOk = false;
+                    }
+                    if (data.result.supported && !data.result.detected) {
+                        cameraStatus = 'camera not connected';
+                        cameraOk = false;
+                    }
+                    $("#video-status").text(cameraStatus);
+                    if (cameraOk) {
+                        $("#video-card-header").addClass("bg-success").removeClass("bg-danger");
+                    }
+                    else {
+                        $("#video-card-header").removeClass("bg-success").addClass("bg-danger");
+                    }
+                },
+                error: function (xhr, status, err) {
+                    $("#video-updater").text(err.message);
+                },
+                complete: function(){
+                    $("#video-status-check-btn").removeClass('disabled');
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
