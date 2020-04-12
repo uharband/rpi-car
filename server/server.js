@@ -102,6 +102,10 @@ function setup(callback) {
 
     let setupFunctions = [];
 
+    if (config.modules.car) {
+        logger.info('car is enabled. adding to setup functions');
+        setupFunctions.push(carController.setup.bind(null, dryMode));
+    }
     if (config.modules.video) {
         logger.info('video is enabled. adding to setup functions');
         setupFunctions.push(videoController.setup.bind(null, dryMode));
@@ -109,10 +113,6 @@ function setup(callback) {
     if (config.modules.audio) {
         logger.info('audio is enabled. adding to setup functions');
         setupFunctions.push(audioController.setup.bind(null, dryMode));
-    }
-    if (config.modules.car) {
-        logger.info('car is enabled. adding to setup functions');
-        setupFunctions.push(carController.setup.bind(null, dryMode));
     }
 
     async.series(setupFunctions, (err, res) =>{

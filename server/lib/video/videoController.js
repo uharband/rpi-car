@@ -82,12 +82,14 @@ function turnOn(callback) {
             logger.info('already running, nothing to do');
             callback(null);
         } else {
+            // base our env on the existing process env
+            let myEnv = Object.create( process.env );
+            myEnv.LD_LIBRARY_PATH = config.video.root;
+
             // run the streamer
-            mjpg_streamer_process = child_process.exec(command, {
-                env: {
-                    LD_LIBRARY_PATH: config.video.root
-                },
-                detached: true
+            mjpg_streamer_process = child_process.spawn(command.entry, command.args, {
+                env: myEnv,
+                shell: true
             });
 
             mjpg_streamer_process.stdout.on('data', function (data) {
@@ -96,6 +98,10 @@ function turnOn(callback) {
 
             mjpg_streamer_process.stderr.on('data', function (data) {
                 logger.info('data from stderr: ' + data);
+            });
+
+            mjpg_streamer_process.on('error', function (err) {
+                logger.info('err: ' + err);
             });
 
             let now = new Date();
@@ -391,15 +397,26 @@ function resolveConfiguration() {
 function generateCommand() {
     let inputCommand = generateInputCommand();
     let outputCommand = generateOutputCommand();
-    let command = 'mjpg_streamer ' + inputCommand + outputCommand;
-    logger.info('launch mjpg_streamer command: ' + command);
+    let params = [];
+    inputCommand.forEach((item) => {
+        params.push(item);
+    });
+    outputCommand.forEach((item) => {
+        params.push(item);
+    });
+    let command = {entry: '/usr/local/bin/mjpg_streamer', args: params};
+    logger.info('launch mjpg_streamer command: ' + JSON.stringify(command));
     return command;
 }
 
 function generateOutputCommand() {
     let wwwPath = path.join(root, 'www');
     let listeningPort = port ? '--port ' + port : '';
-    return ' -o "output_http.so ' + listeningPort + ' -w ' + wwwPath + '"';
+    let outputCommand = [];
+    outputCommand.push('-o');
+    let outputCommandArgs = '"output_http.so ' + listeningPort + ' -w ' + wwwPath + '"';
+    outputCommand.push(outputCommandArgs);
+    return outputCommand;
 }
 
 function generateInputCommand() {
@@ -425,23 +442,26 @@ function generateInputCommandUvc() {
 }
 
 function generateInputCommandRpiCam() {
-    inputCommand = ' -i "input_raspicam.so ';
+    let inputCommand = [];
+    inputCommand.push('-i');
+    let inputCommandArgs = '"input_raspicam.so ';
     if (width && height) {
-        inputCommand += ' --width ' + width + ' --height ' + height;
+        inputCommandArgs += ' --width ' + width + ' --height ' + height;
     }
     if (fps) {
-        inputCommand += ' --framerate ' + fps;
+        inputCommandArgs += ' --framerate ' + fps;
     }
     if (jpgQuality) {
-        inputCommand += ' --quality ' + jpgQuality;
+        inputCommandArgs += ' --quality ' + jpgQuality;
     }
     if (verticalFlip) {
-        inputCommand += ' --vf';
+        inputCommandArgs += ' --vf';
     }
     if (timestamp) {
-        inputCommand += ' --timestamp';
+        inputCommandArgs += ' --timestamp';
     }
-    inputCommand += '"';
+    inputCommandArgs += '"';
+    inputCommand.push(inputCommandArgs);
     return inputCommand;
 }
 

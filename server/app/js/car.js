@@ -46,6 +46,6 @@ function setState(direction, speed, eventId) {
             }
         }
     };
-    xhttp.open("GET", "/state?direction=" + direction + "&speed=" + speed + "&eventId=" + eventId, true);
+    xhttp.open("GET", "/car/state?direction=" + direction + "&speed=" + speed + "&eventId=" + eventId, true);
     xhttp.send();
 }
