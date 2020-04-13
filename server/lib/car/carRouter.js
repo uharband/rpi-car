@@ -36,64 +36,64 @@ carRouter.use((req, res, next) => {
 
 carRouter.get('/forward', function (req, res) {
     res.send('going forward');
-    car.execute('forward');
+    carController.execute('forward');
 });
 
 
 carRouter.get('/increaseForwardSpeed', function (req, res) {
     res.send('increasing forward speed');
-    car.execute('increaseForwardSpeed');
+    carController.execute('increaseForwardSpeed');
 });
 
 carRouter.get('/increaseBackwardSpeed', function (req, res) {
     res.send('increasing backward speed');
-    car.execute('increaseBackwardSpeed');
+    carController.execute('increaseBackwardSpeed');
 });
 
 
 carRouter.get('/backward', function (req, res) {
     res.send('going backwards');
-    car.execute('backwards');
+    carController.execute('backwards');
 });
 
 carRouter.get('/increaseBackwardsSpeed', function (req, res) {
     res.send('increasing backwards speed');
-    car.execute('forward');
+    carController.execute('forward');
 });
 
 carRouter.get('/decreaseBackwardsSpeed', function (req, res) {
     res.send('decreasing backwards speed');
-    car.execute('forward');
+    carController.execute('forward');
 });
 
 carRouter.get('/moderateRight', function (req, res) {
     res.send('moderate right');
-    car.execute('startModerateRight');
+    carController.execute('startModerateRight');
 });
 
 carRouter.get('/moderateLeft', function (req, res) {
     res.send('moderate left');
-    car.execute('startModerateLeft');
+    carController.execute('startModerateLeft');
 });
 
 carRouter.get('/sharpRight', function (req, res) {
     res.send('sharp right');
-    car.execute('startSharpRight');
+    carController.execute('startSharpRight');
 });
 
 carRouter.get('/sharpLeft', function (req, res) {
     res.send('sharp left');
-    car.execute('startSharpLeft');
+    carController.execute('startSharpLeft');
 });
 
 carRouter.get('/stopTurning', function (req, res) {
     res.send('stopped turning');
-    car.execute('stopTurning');
+    carController.execute('stopTurning');
 });
 
 carRouter.get('/stop', function (req, res) {
     res.send('stop');
-    car.execute('stop');
+    carController.execute('stop');
 });
 
 carRouter.get('/state', function (req, res) {
@@ -104,7 +104,7 @@ carRouter.get('/state', function (req, res) {
     if (!config.modules.car) {
         return handleModuleNotConfigured('car', res);
     } else {
-        car.addCommand(speed, direction, eventId, (state) => {
+        carController.addCommand(speed, direction, eventId, (state) => {
             res.send({direction: state.direction, speed: state.speed, eventId: state.eventId});
         });
     }

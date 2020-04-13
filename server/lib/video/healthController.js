@@ -11,11 +11,11 @@ let snapshotsFullPath = path.join(__dirname, '..', '..','app', snapshotsDirector
 function isConnected(cb){
     logger.info('isConnected entered');
 
-    if(dryMode){
-        return setTimeout(() =>{
-            return cb(null, {supported: 1, detected: 0});
-        }, 1000);
-    }
+        if(dryMode){
+            return setTimeout(() =>{
+                return cb(null, {supported: 1, detected: 1});
+            }, 1000);
+        }
 
     utils.execute('/opt/vc/bin/vcgencmd get_camera', function(err, res) {
         if(err){

@@ -11,6 +11,13 @@ let recordingsFullPath = path.join(__dirname, '..', '..', 'app', recordingsDirec
 
 function isConnected(cb) {
     logger.info('isConnected entered');
+
+    if(dryMode){
+        return setTimeout(() =>{
+            return cb(null, {card: 1, device: 1});
+        }, 1000);
+    }
+
     utils.execute('arecord -l | grep -i "sound device"', function (err, res) {
         if (err) {
             return cb(new Error('error checking if audio device is connected. internal error: ' + err.message));

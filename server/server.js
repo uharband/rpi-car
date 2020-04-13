@@ -5,6 +5,8 @@ let app = express();
 let logger = require('./lib/log');
 let config = require('config');
 
+let moduleManagementRouter = require('./lib/moduleManagement/moduleManagementRouter');
+
 let carController = require('./lib/car/carController');
 let carRouter = require('./lib/car/carRouter');
 
@@ -42,6 +44,7 @@ app.use(express.static(__dirname + '/snapshots'));
 // static serving of recordings
 app.use(express.static(__dirname + '/recordings'));
 
+app.use('/modules', moduleManagementRouter);
 app.use('/car', carRouter);
 app.use('/video', videoRouter);
 app.use('/audio', audioRouter);

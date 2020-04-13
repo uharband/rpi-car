@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>RCar</title>
+        <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5">
+        <style>
+        html, body {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 0;
+            margin: 0;
+            background-color: #f2f2f2;
+        }
+
+        #video_container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 50%;
+            width: 100%;
+
+			margin-bottom:5px;
+        }
+
+        #audio_container {
+            position: relative;
+            
+            margin-bottom: 5px;
+            margin-top: 5px;
+            width: 200px;
+            margin-right: auto;
+            margin-left: auto;
+            top: 50%;
+
+        }
+
+        #remote_container {
+            position: absolute;
+            left: 0;
+            top: 60%;
+            height: 40%;
+            width: 100%;
+
+        }
+
+		img {
+			max-width: 100%;
+			max-height: 100%;
+			margin-left: auto;
+			margin-right: auto;
+			margin-bottom: 5px;
+			display: block;			
+		}
+        .videostyle {
+            max-width: 100%;
+            max-height: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        </style>
+    </head>
+    <body onload="pageLoaded()">
+        <div id="video_container">
+            <img src="img/loading.jpg"
+                 id="video"
+                 onerror="if (this.src != './img/sunset.jpg') this.src = './img/sunset.jpg';"
+                 class="videostyle"/>
+        </div>
+        <div id="audio_container">
+            <audio controls id="audio" class="audiostyle">
+                <source id="audioSource" src="" />
+                Your browser does not support the audio format.
+            </audio>
+        </div>
+        <div id="remote_container"></div>
+
+        <script src="dist/nipplejs.js" charset="utf-8"></script>
+        <script src="js/car.js" charset="utf-8"></script>
+        <script>
+            function pageLoaded(){
+                var video = document.getElementById('video');
+                video.src = 'http://' + window.location.hostname + ':8090/?action=stream';
+
+                var audio = document.getElementById('audio');
+                var source = document.getElementById('audioSource');
+                source.src = 'http://' + window.location.hostname + ':8081'
+                audio.load();
+                audio.play();
+            }
+        </script>
+    </body>
+</html>

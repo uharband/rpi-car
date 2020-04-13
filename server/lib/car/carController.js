@@ -56,6 +56,7 @@ function setup(callback) {
     currentSpeed = 0;
 
     if(dryMode){
+        active = true;
         return callback();
     }
 
@@ -75,12 +76,13 @@ function setup(callback) {
 }
 
 function shutdown(callback) {
-    if(dryMode){
+    if(!active){
+        logger.warn('car shutdown called while not active');
         return callback();
     }
 
-    if(!active){
-        logger.warn('car shutdown called while not active');
+    if(dryMode){
+        active = false;
         return callback();
     }
 

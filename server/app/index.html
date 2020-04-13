@@ -1,99 +1,93 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>RCar</title>
-        <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5">
-        <style>
-        html, body {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            padding: 0;
-            margin: 0;
-            background: rgba(0, 255, 0, 0.1);
-        }
+<!doctype html>
+<html lang="en">
 
-        #video_container {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 50%;
-            width: 100%;
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-			margin-bottom:5px;
-        }
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-        #audio_container {
-            position: relative;
-            
-            margin-bottom: 5px;
-            margin-top: 5px;
-            width: 200px;
-            margin-right: auto;
-            margin-left: auto;
-            top: 50%;
+    <title>car starter</title>
+</head>
 
-        }
+<body style="background-color: #f2f2f2">
+    <div class="container">
+        <!-- READY -->
+        <div class="row align-items-start">
+            <div class="col">
+                <div class="alert alert-primary align-middle my-3" role="alert">
+                    <p class="h3"> <img src="/img/check-circle.svg" alt="" width="32" height="32"> 1. Ready? </p>
+                </div>
+                <p class="h6">Make sure Camera and Mic are connected</p>
+                <!-- VIDEO CARD -->
+                <div class="card-deck">
+                    <div id="video-card" class="card text-center">
+                        <div id="video-card-header" class="card-header">
+                            <img src="/img/camera-video.svg" alt="" width="32" height="32">
+                            Camera
+                        </div>
+                        <div class="card-body">
+                            <p id="video-status" class="card-text">Checking connection...</p>
+                            <a href="#" id="video-status-check-btn" class="btn btn-primary">Check Now</a>
+                        </div>
+                    </div>
 
-        #remote_container {
-            position: absolute;
-            left: 0;
-            top: 60%;
-            height: 40%;
-            width: 100%;
-
-        }
-
-		img {
-			max-width: 100%;
-			max-height: 100%;
-			margin-left: auto;
-			margin-right: auto;
-			margin-bottom: 5px;
-			display: block;			
-		}
-        .videostyle {
-            max-width: 100%;
-            max-height: 100%;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        </style>
-    </head>
-    <body onload="pageLoaded()">
-        <div id="video_container">
-            <img src="./img/loading.jpg"
-                 id="video"
-                 onerror="if (this.src != './img/sunset.jpg') this.src = './img/sunset.jpg';"
-                 class="videostyle"/>
+                    <!-- AUDIO CARD -->
+                    <div class="card text-center">
+                        <div id="audio-card-header" class="card-header">
+                            <img src="/img/mic.svg" alt="" width="32" height="32">
+                            Mic
+                        </div>
+                        <div class="card-body">
+                            <p id="audio-status" class="card-text">Checking connection...</p>
+                            <a href="#" id="audio-status-check-btn" class="btn btn-primary">Check Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="audio_container">
-            <audio controls id="audio" class="audiostyle">
-                <source id="audioSource" src="" />
-                Your browser does not support the audio format.
-            </audio>
+        <hr />
+
+        <!-- SET -->
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="alert alert-primary my-4" role="alert">
+                    <p class="h3"><img src="/img/gear.svg" alt="" width="32" height="32"> 2. Set... </p>
+                </div>
+                <p class="h6">Select the Car App</p>
+                <select id="app-implementations" class="custom-select">
+                </select>
+
+            </div>
         </div>
-        <div id="remote_container"></div>
+        <hr />
+        <!-- GO -->
+        <div class="row align-items-end">
+            <div class="col">
+                <div class="alert alert-primary  my-4" role="alert">
+                    <p class="h3"> <img src="/img/play.svg" alt="" width="32" height="32"> 3. Go!</p>
+                </div>
+                <div class="text-center">
+                    <button id="start-driving", type="button" class="btn btn-outline-dark btn-lg btn-block"><b>Start Driving ></b></button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <script src="./dist/nipplejs.js" charset="utf-8"></script>
-        <script src="./js/car.js" charset="utf-8"></script>
-        <script>
-            function pageLoaded(){
-                var video = document.getElementById('video');
-                video.src = 'http://' + window.location.hostname + ':8090/?action=stream';
 
-                var audio = document.getElementById('audio');
-                var source = document.getElementById('audioSource');
-                source.src = 'http://' + window.location.hostname + ':8081'
-                audio.load();
-                audio.play();
-            }
-        </script>
-    </body>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="dist/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="dist/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="dist/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+    <script src="index.js"></script>
+</body>
+
 </html>
