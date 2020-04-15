@@ -59,8 +59,7 @@ audioRouter.get('/off', function (req, res) {
 audioRouter.get('/status/connection', function (req, res) {
     audioHealth.isConnected((err, result) => {
         if (err) {
-            res.status = 500;
-            res.send({error: err.message});
+            res.status(500);
         } else {
             res.send(result);
         }
@@ -72,7 +71,7 @@ audioRouter.get('/status/test-recording', function (req, res) {
 
     audioHealth.takeTestRecording(function (err, snapshot) {
         if (err) {
-            res.status = 500;
+            res.status(500);
             res.send({error: err.message});
         } else {
             res.set('Location', snapshot);

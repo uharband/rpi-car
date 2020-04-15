@@ -36,7 +36,7 @@ videoRouter.use((req, res, next) => {
 videoRouter.get('/on', function (req, res) {
     videoController.turnOn(function (err) {
         if (err) {
-            res.status = 500;
+            res.status(500);
             res.send({action: "video turn on", result: "error", message: err.message});
         } else {
             res.send({action: "video turn on", result: "success"});
@@ -47,7 +47,7 @@ videoRouter.get('/on', function (req, res) {
 videoRouter.get('/off', function (req, res) {
     videoController.turnOff(function (err) {
         if (err) {
-            res.status = 500;
+            res.status(500);
             res.send({action: "video turn off", result: "error", message: err.message});
         } else {
             res.send({action: "video turn off", result: "success"});
@@ -59,7 +59,7 @@ videoRouter.get('/off', function (req, res) {
 videoRouter.post('/snapshots', function (req, res) {
     videoController.takeSnapshot(function (err, snapshot) {
         if (err) {
-            res.status = 500;
+            res.status(500);
             res.send({action: "video take snapshot", result: "error", message: err.message});
         } else {
             res.set('Location', snapshot);
@@ -74,7 +74,7 @@ videoRouter.get('/take-snapshot', function (req, res) {
 
     videoController.takeSnapshot(function (err, snapshot) {
         if (err) {
-            res.status = 500;
+            res.status(500);
             res.send({action: action, result: "error", message: err.message});
         } else {
             res.set('Location', snapshot);
@@ -91,7 +91,7 @@ videoRouter.delete('/snapshots/:snapshot', function (req, res) {
 
     videoController.deleteSnapshot(snapshotName, function (err) {
         if (err) {
-            res.status = 500;
+            res.status(500);
             res.send({action: action, result: "error", message: err.message});
         } else {
             res.send({action: action, result: "success"});
@@ -118,7 +118,7 @@ videoRouter.get('/configure', function (req, res) {
 
     videoController.configure(width, height, verticalFlip, jpgQuality, fps, function (err) {
         if (err) {
-            res.status = 500;
+            res.status(500);
             res.send({action: action, result: "error", error: err.message});
         } else {
             res.send({action: action, result: "success"});
@@ -130,10 +130,9 @@ videoRouter.get('/status/connection', function (req, res) {
     let action = "video check connection";
     videoHealth.isConnected((err, result) => {
         if (err) {
-            res.status = 500;
-            res.send({action: action, result: "error", error: err.message});
+            res.status(500);
         } else {
-            res.send({action: "video check connection", result: result });
+            res.send(result);
         }
     });
 });
@@ -142,7 +141,7 @@ videoRouter.get('/status/test-snapshot', function (req, res) {
     videoHealth.takeTestSnapshot(function (err, snapshot) {
         let action = "video test snapshot";
         if (err) {
-            res.status = 500;
+            res.status(500);
             res.send({action: action, result: "error", error: err.message});
         } else {
             res.set('Location', snapshot);

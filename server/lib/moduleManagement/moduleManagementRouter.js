@@ -19,7 +19,7 @@ moduleManagementRouter.get('/:module/implementations', function (req, res) {
         res.send(modules);
     }
     catch (err) {
-        res.status = 500;
+        res.status(500);
         res.send({error: err.message});
     }
 });

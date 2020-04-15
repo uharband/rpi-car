@@ -56,27 +56,17 @@ function checkVideoStatus() {
         type: 'GET',
         url: '/video/status/connection',
         cache: false,
-        success: function (data) {
-            let cameraOk = true;
-            let cameraStatus = 'camera connected!';
-            if (!data.result.supported) {
-                cameraStatus = 'camera not enabled';
-                cameraOk = false;
-            }
-            if (data.result.supported && !data.result.detected) {
-                cameraStatus = 'camera not connected';
-                cameraOk = false;
-            }
-            $("#video-status").text(cameraStatus);
-            if (cameraOk) {
+        success: function (videoConnection) {
+            $("#video-status").text(videoConnection.status);
+            if(videoConnection.connected){
                 $("#video-card-header").addClass("bg-success").removeClass("bg-danger");
             }
-            else {
+            else{
                 $("#video-card-header").removeClass("bg-success").addClass("bg-danger");
             }
         },
         error: function (xhr, status, err) {
-            $("#video-updater").text(err.message);
+            $("#video-status").text('internal error');
             $("#video-card-header").removeClass("bg-success").addClass("bg-danger");
         },
         complete: function () {
@@ -92,16 +82,20 @@ function checkAudioStatus() {
         type: 'GET',
         url: '/audio/status/connection',
         cache: false,
-        success: function (data) {
-            let micOk = true;
-            let micStatus = 'mic connected!';
+        success: function (audioConnection) {
+            $("#audio-status").text(audioConnection.status);
+            if(audioConnection.connected){
+                $("#audio-card-header").addClass("bg-success").removeClass("bg-danger");
+            }
+            else{
+                $("#audio-card-header").removeClass("bg-success").addClass("bg-danger");
+            }
 
-            $("#audio-status").text(micStatus);
-            $("#audio-card-header").addClass("bg-success").removeClass("bg-danger");
         },
+        // unexpected error
         error: function (xhr, status, err) {
-            $("#audio-updater").text(err.message);
-            $("#audio-card-header").addClass("bg-success").removeClass("bg-danger");
+            $("#audio-status").text('internal error');
+            $("#audio-card-header").removeClass("bg-success").addClass("bg-danger");
         },
         complete: function () {
             $("#audio-status-check-btn").removeClass('disabled');

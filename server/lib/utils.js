@@ -17,7 +17,9 @@ function execute(command, cb) {
             return cb(null, {code: code, stdout: stdout, stderr: stderr})
         }
         if (code !== 0) {
-            return cb(new Error('error executing command ' + command + '. exit code was ' + code + stderr ? '. stderr: ' + stderr : ''));
+            let err = new Error('error executing command ' + command + '. exit code was ' + code + (stderr && stderr !== '') ? '. stderr: ' + stderr : '');
+            err.stderr = stderr;
+            return cb();
         }
     });
 }

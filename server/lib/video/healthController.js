@@ -13,13 +13,13 @@ function isConnected(cb){
 
         if(dryMode){
             return setTimeout(() =>{
-                return cb(null, {supported: 1, detected: 1});
+                return cb(null, {connected: true, status: 'camera connected'});
             }, 1000);
         }
 
     utils.execute('/opt/vc/bin/vcgencmd get_camera', function(err, res) {
         if(err){
-            return cb(new Error('error checking if rpi-camera is connected. internal error: ' + err.message));
+            return cb(null, {connected: false, status: 'camera not connected', details: 'error checking if rpi-camera is connected. internal error: ' + err.message});
         }
 
         try{
@@ -28,10 +28,33 @@ function isConnected(cb){
             let supported = (parseInt(supportedSplit[1]) === 1);
             let detectedSplit = result[1].split('=');
             let detected = (parseInt(detectedSplit[1]) === 1);
-            return cb(null, {supported: supported, detected: detected})
+
+            let response = {};
+
+            if(supported && detected){
+                response.connected = true;
+                response.status = 'camera connected';
+            }
+
+            // raspberry pi camera is not enabled
+            if(!supported){
+                response.connected = false;
+                response.status = 'camera not enabled';
+                response.details = 'camera is not enabled. use raspi-config to enable';
+            }
+            // camera is enabled but not connected
+            else{
+                if(!detected){
+                    response.connected = false;
+                    response.status = 'camera not connected';
+                    response.details = 'camera was not detected. make sure it is connected';
+                }
+            }
+
+            return cb(null, response);
         }
         catch (e) {
-            return cb(new Error('error parsing get_camera result. err: ' + e.message));
+            return cb(null, {connected: false, status: 'camera not connected', details: 'error parsing get_camera result. err: ' + e.message});
         }
     });
 }
