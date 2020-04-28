@@ -1,0 +1,17 @@
+[Unit]
+Description=Rpi-Car service
+After=multi-user.target
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+WorkingDirectory=/home/pi/rpi-car/server
+ExecStart=/usr/bin/node server.js
+User=root
+Restart=always
+RestartSec=5
+StartLimitBurst=5
+StartLimitInterval=1m
+
+[Install]
+WantedBy=multi-user.target
