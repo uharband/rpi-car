@@ -15,6 +15,7 @@
         "height": 480,
         "jpgQuality": 85,
         "verticalFlip": true,
+        "horizontalFlip": true,
         "port": "8090"
     },
     "car":{

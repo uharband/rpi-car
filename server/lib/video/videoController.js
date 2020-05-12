@@ -25,7 +25,7 @@ let fs = require('fs');
 let utils = require('../utils');
 let logger = require('../log');
 let child_process = require('child_process');
-let format = require('dateformat');
+
 let active = false;
 
 let userConfigFile = path.join(__dirname, '..', 'config', 'user.json');
@@ -37,6 +37,7 @@ let root = config.video.root;
 let width;
 let height;
 let verticalFlip;
+let horizontalFlip;
 let jpgQuality;
 let fps;
 let timestamp;
@@ -303,7 +304,7 @@ function shutdown(callback) {
     })
 }
 
-function configure(width, height, verticalFlip, jpgQuality, fps, callback) {
+function configure(width, height, verticalFlip, horizontalFlip, jpgQuality, fps, callback) {
     logger.info('configure entered. width: ' + width + ', height: ' + height + ', verticalFlip: ' + verticalFlip + ', jpgQuality: ' + jpgQuality + ', fps: ' + fps);
 
     let userConfig = {};
@@ -321,6 +322,9 @@ function configure(width, height, verticalFlip, jpgQuality, fps, callback) {
     }
     if (typeof (verticalFlip) === 'boolean') {
         userConfig.video.verticalFlip = verticalFlip;
+    }
+    if (typeof (horizontalFlip) === 'boolean') {
+        userConfig.video.horizontalFlip = horizontalFlip;
     }
     if (Number.isInteger(jpgQuality)) {
         userConfig.video.jpgQuality = jpgQuality;
@@ -341,6 +345,7 @@ function resolveConfiguration() {
     width = config.video.width;
     height = config.video.height;
     verticalFlip = config.video.verticalFlip;
+    horizontalFlip = config.video.horizontalFlip;
     jpgQuality = config.video.jpgQuality;
     fps = config.video.fps;
     timestamp = config.video.timestamp;
@@ -361,6 +366,9 @@ function resolveConfiguration() {
             }
             if (userConfig.video.verticalFlip !== undefined) {
                 verticalFlip = userConfig.video.verticalFlip;
+            }
+            if (userConfig.video.horizontalFlip !== undefined) {
+                horizontalFlip = userConfig.video.horizontalFlip;
             }
             if (userConfig.video.jpgQuality !== undefined) {
                 jpgQuality = userConfig.video.jpgQuality;
@@ -454,6 +462,9 @@ function generateInputCommandRpiCam() {
     }
     if (verticalFlip) {
         inputCommandArgs += ' --vf';
+    }
+    if (horizontalFlip) {
+        inputCommandArgs += ' --hf';
     }
     if (timestamp) {
         inputCommandArgs += ' --timestamp';
