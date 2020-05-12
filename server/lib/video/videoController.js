@@ -25,6 +25,7 @@ let fs = require('fs');
 let utils = require('../utils');
 let logger = require('../log');
 let child_process = require('child_process');
+let request = require('request');
 
 let active = false;
 
@@ -224,12 +225,21 @@ function takeSnapshot(callback) {
     let snapshotLabel = new Date().toISOString().replaceAll(':', '-') + '.jpg';
     let snapshotLocation = path.join(snapshotsFullPath, snapshotLabel);
 
-    utils.execute('ffmpeg -f MJPEG -y -i http://localhost:' + port + '/?action=snapshot -r 1 -vframes 1 -q:v 1 ' + snapshotLocation, function (err) {
+    let snapshotUrl = 'http://localhost:' + port + '/?action=snapshot';
+
+    logger.info('before taking snapshot from video stream');
+    request(snapshotUrl, {encoding: 'binary'}, function(err, response, body) {
+        logger.info('after taking snapshot from video stream, before saving to file');
         if (err) {
             return callback(new Error('error taking snapshot. internal error: ' + err.message));
         }
-        logger.info('takeSnapshot: success. saved to ' + path.join(snapshotsDirectory, snapshotLabel));
-        callback(null, path.join(snapshotsDirectory, snapshotLabel));
+        fs.writeFile(snapshotLocation, body, 'binary', function (err) {
+            if (err) {
+                return callback(new Error('error saving snapshot to file. internal error: ' + err.message));
+            }
+            logger.info('takeSnapshot: success. saved to ' + path.join(snapshotsDirectory, snapshotLabel));
+            callback(null, path.join(snapshotsDirectory, snapshotLabel));
+        });
     });
 }
 
