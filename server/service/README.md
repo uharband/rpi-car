@@ -10,3 +10,6 @@ then enable the service
 
 sudo systemctl enable rpi-car.service
 
+restart the service
+
+sudo systemctl restart rpi-car.service
