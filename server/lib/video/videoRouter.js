@@ -56,6 +56,28 @@ videoRouter.get('/off', function (req, res) {
 
 });
 
+videoRouter.get('/start-recording', function (req, res) {
+    videoController.startRecording(function (err) {
+        if (err) {
+            res.status(500);
+            res.send({action: "video start recording", result: "error", message: err.message});
+        } else {
+            res.send({action: "video start recording", result: "success"});
+        }
+    });
+});
+
+videoRouter.get('/stop-recording', function (req, res) {
+    videoController.startRecording(function (err) {
+        if (err) {
+            res.status(500);
+            res.send({action: "video stop recording", result: "error", message: err.message});
+        } else {
+            res.send({action: "video stop recording", result: "success"});
+        }
+    });
+});
+
 videoRouter.post('/snapshots', function (req, res) {
     videoController.takeSnapshot(function (err, snapshot) {
         if (err) {

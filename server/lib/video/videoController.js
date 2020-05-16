@@ -34,6 +34,7 @@ let snapshotsDirectory = 'snapshots';
 let snapshotsFullPath = path.join(__dirname, '..', '..', 'app', snapshotsDirectory);
 let mjpg_streamer_process = null;
 let playing = false;
+let recording = false;
 let root = config.video.root;
 let width;
 let height;
@@ -130,6 +131,30 @@ function turnOn(callback) {
             }, 2000);
         }
     });
+}
+
+function startRecording(callback){
+    logger.info('startRecording - entered');
+    if(recording){
+        logger.info('already recording, doing nothing');
+        return;
+    }
+    recording = true;
+    restart((err) => {
+        callback(err);
+    })
+}
+
+function stopRecording(callback){
+    logger.info('stopRecording - entered');
+    if(!recording){
+        logger.info('already not recording, doing nothing');
+        return;
+    }
+    recording = false;
+    restart((err) => {
+        callback(err);
+    })
 }
 
 function isRunning(callback) {
@@ -420,6 +445,12 @@ function generateCommand() {
     outputCommand.forEach((item) => {
         params.push(item);
     });
+    if(recording){
+        let outputFileCommand = generateMjpgFileOutputCommand();
+        outputFileCommand.forEach((item) => {
+            params.push(item);
+        });
+    }
     let command = {entry: '/usr/local/bin/mjpg_streamer', args: params};
     logger.info('launch mjpg_streamer command: ' + JSON.stringify(command));
     return command;
@@ -431,6 +462,16 @@ function generateOutputCommand() {
     let outputCommand = [];
     outputCommand.push('-o');
     let outputCommandArgs = '"output_http.so ' + listeningPort + ' -w ' + wwwPath + '"';
+    outputCommand.push(outputCommandArgs);
+    return outputCommand;
+}
+
+function generateMjpgFileOutputCommand() {
+    let folder = '--folder' + snapshotsFullPath;
+    let saveToMjpgFile = '--mjpeg';
+    let outputCommand = [];
+    outputCommand.push('-o');
+    let outputCommandArgs = '"output_file.so ' + folder + ' ' + saveToMjpgFile + '"';
     outputCommand.push(outputCommandArgs);
     return outputCommand;
 }
@@ -498,6 +539,8 @@ module.exports.setup = setup;
 module.exports.shutdwon = shutdown;
 module.exports.turnOn = turnOn;
 module.exports.turnOff = turnOff;
+module.exports.startRecording = startRecording;
+module.exports.stopRecording = stopRecording;
 module.exports.configure = configure;
 module.exports.takeSnapshot = takeSnapshot;
 module.exports.deleteSnapshot = deleteSnapshot;
