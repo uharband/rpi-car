@@ -68,7 +68,7 @@ videoRouter.get('/start-recording', function (req, res) {
 });
 
 videoRouter.get('/stop-recording', function (req, res) {
-    videoController.startRecording(function (err) {
+    videoController.stopRecording(function (err) {
         if (err) {
             res.status(500);
             res.send({action: "video stop recording", result: "error", message: err.message});

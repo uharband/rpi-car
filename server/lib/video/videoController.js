@@ -467,8 +467,9 @@ function generateOutputCommand() {
 }
 
 function generateMjpgFileOutputCommand() {
-    let folder = '--folder' + snapshotsFullPath;
-    let saveToMjpgFile = '--mjpeg';
+    let movieLabel = new Date().toISOString().replaceAll(':', '-') + '.mjpg';
+    let folder = '--folder ' + snapshotsFullPath;
+    let saveToMjpgFile = '--mjpeg ' + movieLabel;
     let outputCommand = [];
     outputCommand.push('-o');
     let outputCommandArgs = '"output_file.so ' + folder + ' ' + saveToMjpgFile + '"';
