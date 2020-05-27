@@ -10,6 +10,8 @@ let moduleManagementRouter = require('./lib/moduleManagement/moduleManagementRou
 let carController = require('./lib/car/carController');
 let carRouter = require('./lib/car/carRouter');
 
+let carSimulatorRouter = require('./lib/car/carSimulatorRouter');
+
 let audioController = require('./lib/audio/audioController');
 let audioRouter = require('./lib/audio/audioRouter');
 
@@ -46,6 +48,7 @@ app.use(express.static(__dirname + '/recordings'));
 
 app.use('/modules', moduleManagementRouter);
 app.use('/car', carRouter);
+app.use('/car-simulator', carSimulatorRouter);
 app.use('/video', videoRouter);
 app.use('/audio', audioRouter);
 
