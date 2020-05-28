@@ -31,7 +31,7 @@ class Motor{
                 break;
             case MotorMode.PWM:
                 let pwm = require('raspi-soft-pwm');
-                raspi.init(() => {
+                pwm.init(() => {
                     this.pin1 = new pwm.PWM(this.pin1Name);
                     this.pin2 = new pwm.PWM(this.pin2Name);
                 });
