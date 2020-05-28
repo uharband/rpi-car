@@ -18,7 +18,7 @@ carSimulatorRouter.get('/backwards', function (req, res) {
     res.sendStatus(200);
 });
 
-carSimulatorRouter.get('/forward', function (req, res) {
+carSimulatorRouter.get('/stop', function (req, res) {
     carSimulator.stop(req.query.motor, req.query.speed);
     res.sendStatus(200);
 });
