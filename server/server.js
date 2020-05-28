@@ -1,3 +1,11 @@
+// get command line args
+if (process.argv.length > 2 && process.argv[2].toLowerCase() === 'drymode') {
+    global.dryMode = true;
+}
+else{
+    global.dryMode = false;
+}
+
 let express = require('express');
 let async = require('async');
 let app = express();
@@ -22,13 +30,6 @@ let active = false;
 
 let startupTime;
 
-// get command line args
-if (process.argv.length > 2 && process.argv[2].toLowerCase() === 'drymode') {
-    global.dryMode = true;
-}
-else{
-    global.dryMode = false;
-}
 
 logger.info('dryMode = ' + dryMode);
 

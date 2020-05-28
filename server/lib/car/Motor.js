@@ -1,3 +1,9 @@
+if(dryMode){
+    require("./mock");
+}
+
+let raspi = require('raspi');
+
 const MotorMode = {
     Static: "Static",
     PWM: "PWM"
@@ -13,7 +19,7 @@ class Motor{
         this.mode = mode;
         this.pwmSpan = 20;
 
-        let raspi = require('raspi');
+        //let raspi = require('raspi');
 
         switch (mode) {
             case MotorMode.Static:
