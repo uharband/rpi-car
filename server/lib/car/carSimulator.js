@@ -24,7 +24,7 @@ function stop(motor) {
 }
 
 function resolveMotor(motor) {
-    return (motor === right ? rightMotor : leftMotor)
+    return (motor === "right" ? rightMotor : leftMotor)
 }
 
 module.exports.initMotor = initMotor;
