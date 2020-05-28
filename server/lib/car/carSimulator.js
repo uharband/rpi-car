@@ -1,4 +1,4 @@
-const Motor = require("./Motor");
+const Motor = require("./Motor").Motor;
 const leftMotor = new Motor();
 const rightMotor = new Motor();
 

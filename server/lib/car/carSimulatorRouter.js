@@ -22,3 +22,5 @@ carSimulatorRouter.get('/forward', function (req, res) {
     carSimulator.stop(req.query.motor, req.query.speed);
     res.send();
 });
+
+module.exports = carSimulatorRouter;
